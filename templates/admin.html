@@ -1,0 +1,64 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>NovaMacro Admin</title>
+  <style>
+    body { font-family: Arial; margin: 20px; max-width: 900px; }
+    .box { border: 1px solid #ddd; padding: 16px; border-radius: 8px; margin-bottom: 16px; }
+    input, select, button { padding: 8px; margin: 6px 0; width: 100%; }
+    code { background: #f4f4f4; padding: 2px 6px; border-radius: 4px; }
+    .keys { white-space: pre-wrap; font-family: Consolas, monospace; background:#f7f7f7; padding:12px; border-radius:8px;}
+  </style>
+</head>
+<body>
+
+<h2>NovaMacro Admin Panel</h2>
+
+{% if message %}
+  <div class="box"><b>{{ message }}</b></div>
+{% endif %}
+
+<div class="box">
+  <h3>Create Keys</h3>
+  <form method="post" action="/admin/web/create">
+    <input type="hidden" name="token" value="{{ token }}"/>
+
+    <label>Type</label>
+    <select name="key_type">
+      <option value="lifetime">Lifetime (never expires)</option>
+      <option value="days">Timed</option>
+    </select>
+
+    <label>Days (only for Timed)</label>
+    <input type="number" name="days" value="30" min="1"/>
+
+    <label>How many keys?</label>
+    <input type="number" name="count" value="5" min="1" max="5000"/>
+
+    <button type="submit">Create</button>
+  </form>
+</div>
+
+<div class="box">
+  <h3>Revoke (Ban) Key</h3>
+  <form method="post" action="/admin/web/revoke">
+    <input type="hidden" name="token" value="{{ token }}"/>
+    <label>License Key</label>
+    <input type="text" name="license_key" placeholder="NOVA-...."/>
+    <button type="submit">Revoke</button>
+  </form>
+</div>
+
+{% if created_keys %}
+<div class="box">
+  <h3>Created Keys</h3>
+  <div class="keys">{% for k in created_keys %}{{ k }}
+{% endfor %}</div>
+</div>
+{% endif %}
+
+<p>Open this page with: <code>/admin?token=YOUR_ADMIN_TOKEN</code></p>
+
+</body>
+</html>

@@ -324,7 +324,10 @@ input, select{
 };
 
   let ALL_KEYS = [];
-
+  
+function getToken(){
+  return new URLSearchParams(window.location.search).get("token") || "";
+}
   function qs() {
     // keep token query in all requests
     return window.location.search || "";
@@ -364,7 +367,7 @@ input, select{
 
       }
 
-      const r = await fetch(API.create + qs(), { method: "POST", body: fd });
+      const r = await fetch(API.create, { method: "POST", body: fd });
       const data = await r.json().catch(() => ({}));
 
       if (!r.ok || data.ok === false) {
@@ -382,25 +385,31 @@ input, select{
     }
   }
 
-  async function loadKeys(){
-    try {
-      setStatus("keysStatus", "Loading keys...", "warn");
-      const r = await fetch(API.listKeys + qs());
-      const data = await r.json().catch(() => ({}));
+async function loadKeys(){
+  try {
+    setStatus("keysStatus", "Loading keys...", "warn");
 
-      if (!r.ok || data.ok === false) {
-        setStatus("keysStatus", "Load failed:\n" + JSON.stringify(data, null, 2), "bad");
-        return;
-      }
+    const fd = new FormData();
+    fd.append("token", getToken());
 
-      ALL_KEYS = data.keys || [];
-      document.getElementById("keysMeta").textContent = `Loaded ${ALL_KEYS.length} keys.`;
-      renderKeys();
-      setStatus("keysStatus", "Ready.", null);
-    } catch (e) {
-      setStatus("keysStatus", "Error: " + String(e), "bad");
+    // backend expects token in BODY
+    const r = await fetch(API.listKeys, { method: "POST", body: fd });
+    const data = await r.json().catch(() => ({}));
+
+    if (!r.ok || data.ok === false) {
+      setStatus("keysStatus", "Load failed:\n" + JSON.stringify(data, null, 2), "bad");
+      return;
     }
+
+    ALL_KEYS = data.keys || [];
+    document.getElementById("keysMeta").textContent = `Loaded ${ALL_KEYS.length} keys.`;
+    renderKeys();
+    setStatus("keysStatus", "Ready.", null);
+  } catch (e) {
+    setStatus("keysStatus", "Error: " + String(e), "bad");
   }
+}
+
 
   function renderKeys(){
     const q = (document.getElementById("searchBox").value || "").toLowerCase().trim();
@@ -460,11 +469,13 @@ input, select{
     try {
       const val = document.getElementById("note_" + escapeId(key)).value || "";
       const fd = new FormData();
+      fd.append("token", getToken());
       fd.append("license_key", key);
       fd.append("note", val);
 
+
       setStatus("keysStatus", "Saving note...", "warn");
-      const r = await fetch(API.setNote + qs(), { method: "POST", body: fd });
+      const r = await fetch(API.setNote, { method: "POST", body: fd });
       const data = await r.json().catch(() => ({}));
 
       if (!r.ok || data.ok === false) {
@@ -486,10 +497,11 @@ input, select{
     if (!confirm("Reset HWID for " + key + " ? (It will allow binding to a new computer)")) return;
     try {
       const fd = new FormData();
+      fd.append("token", getToken());
       fd.append("license_key", key);
 
       setStatus("keysStatus", "Resetting HWID...", "warn");
-      const r = await fetch(API.resetHwid + qs(), { method: "POST", body: fd });
+      const r = await fetch(API.resetHwid, { method: "POST", body: fd });
       const data = await r.json().catch(() => ({}));
 
       if (!r.ok || data.ok === false) {
@@ -512,10 +524,12 @@ input, select{
     if (!confirm("DELETE key " + key + " ? This cannot be undone.")) return;
     try {
       const fd = new FormData();
+      fd.append("token", getToken());
       fd.append("license_key", key);
 
+
       setStatus("keysStatus", "Deleting key...", "warn");
-      const r = await fetch(API.deleteKey + qs(), { method: "POST", body: fd });
+      const r = await fetch(API.deleteKey, { method: "POST", body: fd });
       const data = await r.json().catch(() => ({}));
 
       if (!r.ok || data.ok === false) {

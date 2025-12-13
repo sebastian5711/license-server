@@ -351,13 +351,17 @@ input, select{
 
       const fd = new FormData();
       if (type === "lifetime") {
-        fd.append("type", "lifetime");
+        fd.append("token", new URLSearchParams(window.location.search).get("token") || "");
+        fd.append("key_type", "lifetime");
         fd.append("count", String(parseInt(document.getElementById("lifeCount").value || "1", 10)));
         fd.append("days", "0");
+
       } else {
-        fd.append("type", "timed");
+        fd.append("token", new URLSearchParams(window.location.search).get("token") || "");
+        fd.append("key_type", "timed");
         fd.append("days", String(parseInt(document.getElementById("timedDays").value || "30", 10)));
         fd.append("count", String(parseInt(document.getElementById("timedCount").value || "1", 10)));
+
       }
 
       const r = await fetch(API.create + qs(), { method: "POST", body: fd });

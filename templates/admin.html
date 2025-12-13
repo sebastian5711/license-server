@@ -287,9 +287,9 @@
 <script>
   // ===== YOUR REAL SERVER ENDPOINTS (from /docs screenshot) =====
   const API = {
-    create: "/admin/web/create",
-    revoke: "/admin/web/revoke"
-  };
+  create: "/admin/create_keys",
+  revoke: "/admin/revoke" // note: this one needs /{license_key} in the request
+};
 
   // ===== LOCAL STORAGE (because backend has NO "list keys" endpoint) =====
   const STORE_KEY = "NOVAMACRO_KEYS_LOCAL";
@@ -337,69 +337,37 @@ async function createKeys(type){
 
     setStatus(statusId, "Creating...", "warn");
 
-    const fd = new FormData();
-    fd.append("token", token);
-    fd.append("key_type", type === "lifetime" ? "lifetime" : "timed");
+    const payload = {
+      token,
+      key_type: (type === "lifetime") ? "lifetime" : "timed",
+      count: (type === "lifetime")
+        ? parseInt(document.getElementById("lifeCount").value || "1", 10)
+        : parseInt(document.getElementById("timedCount").value || "1", 10),
+      days: (type === "lifetime")
+        ? 0
+        : parseInt(document.getElementById("timedDays").value || "30", 10),
+    };
 
-    if (type === "lifetime") {
-      fd.append("count", String(parseInt(document.getElementById("lifeCount").value || "1", 10)));
-      fd.append("days", "0");
-    } else {
-      fd.append("days", String(parseInt(document.getElementById("timedDays").value || "30", 10)));
-      fd.append("count", String(parseInt(document.getElementById("timedCount").value || "1", 10)));
-    }
+    const r = await fetch(API.create + qs(), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
 
-    const r = await fetch(API.create + qs(), { method: "POST", body: fd });
+    const data = await r.json().catch(() => ({}));
 
-    // Read raw response FIRST (works for JSON or text)
-    const raw = await r.text();
-    let data = {};
-    try { data = raw ? JSON.parse(raw) : {}; } catch { data = {}; }
-
-    if (!r.ok || data.ok === false) {
-      // show raw body so we can see what server really returns
-      setStatus(statusId, "Create failed:\nHTTP " + r.status + "\n\n" + (raw || "(empty)"), "bad");
+    if (!r.ok) {
+      setStatus(statusId, "Create failed:\nHTTP " + r.status + "\n" + JSON.stringify(data, null, 2), "bad");
       return;
     }
 
-    // Try ALL common formats
-    let created = [];
-
-    // 1) keys: ["K1","K2"]
-    if (Array.isArray(data.keys)) created = data.keys;
-
-    // 2) created_keys: ["K1","K2"]
-    if (created.length === 0 && Array.isArray(data.created_keys)) created = data.created_keys;
-
-    // 3) created_keys: [{license_key:"..."}]
-    if (created.length === 0 && Array.isArray(data.created_keys) && data.created_keys[0] && typeof data.created_keys[0] === "object") {
-      created = data.created_keys.map(x => x.license_key).filter(Boolean);
-    }
-
-    // 4) single key string fields
-    if (created.length === 0 && typeof data.license_key === "string") created = [data.license_key];
-    if (created.length === 0 && typeof data.key === "string") created = [data.key];
-
-    // 5) fallback: extract “key-looking strings” from raw text/html
-    if (created.length === 0 && raw) {
-      // looks for long tokens/keys (adjust if your keys are shorter)
-      const matches = raw.match(/[A-Za-z0-9_-]{16,}/g) || [];
-      // remove obvious words like "lifetime", "success", etc.
-      created = matches.filter(x => !["lifetime","timed","success","created","token","admin"].includes(x.toLowerCase()));
-      // dedupe
-      created = [...new Set(created)];
-    }
-
-    if (created.length === 0) {
-      setStatus(
-        statusId,
-        "Created OK, but server did not return keys.\n\nRAW RESPONSE:\n" + (raw || "(empty)"),
-        "warn"
-      );
+    const created = data.keys || data.created_keys || [];
+    if (!Array.isArray(created) || created.length === 0) {
+      setStatus(statusId, "Created OK but server returned no keys:\n" + JSON.stringify(data, null, 2), "warn");
       return;
     }
 
-    // Save locally for Key Manager
+    // save locally for Key Manager
     for (const k of created) {
       ALL_KEYS.unshift({
         license_key: k,
@@ -409,12 +377,12 @@ async function createKeys(type){
         note: ""
       });
     }
-    saveLocalKeys();
 
+    saveLocalKeys();
     setStatus(statusId, "Created:\n" + created.join("\n"), "ok");
+
     loadKeys();
     showTab("keys");
-
   } catch (e) {
     setStatus(statusId, "Error: " + String(e), "bad");
   }
@@ -492,38 +460,45 @@ async function createKeys(type){
     setStatus("keysStatus", "HWID reset locally for " + key + " (UI only)", "warn");
   }
 
-  async function revokeKey(key){
-    if (!confirm("REVOKE key " + key + " ?")) return;
+async function revokeKey(key){
+  if (!confirm("REVOKE key " + key + " ?")) return;
 
-    try {
-      const token = getToken();
-      if (!token) {
-        setStatus("keysStatus", "Missing token in URL.", "bad");
-        return;
-      }
-
-      const fd = new FormData();
-      fd.append("token", token);
-      fd.append("license_key", key);
-
-      setStatus("keysStatus", "Revoking...", "warn");
-      const r = await fetch(API.revoke + qs(), { method: "POST", body: fd });
-      const data = await r.json().catch(() => ({}));
-
-      if (!r.ok || data.ok === false) {
-        setStatus("keysStatus", "Revoke failed:\n" + JSON.stringify(data, null, 2), "bad");
-        return;
-      }
-
-      // remove locally too
-      ALL_KEYS = ALL_KEYS.filter(x => x.license_key !== key);
-      saveLocalKeys();
-      renderKeys();
-      setStatus("keysStatus", "Revoked " + key, "ok");
-    } catch (e) {
-      setStatus("keysStatus", "Error: " + String(e), "bad");
+  try {
+    const token = getToken();
+    if (!token) {
+      setStatus("keysStatus", "Missing token in URL. Use /admin?token=YOUR_ADMIN_TOKEN", "bad");
+      return;
     }
+
+    setStatus("keysStatus", "Revoking...", "warn");
+
+    // Correct endpoint: /admin/revoke/{license_key}
+    const url = `/admin/revoke/${encodeURIComponent(key)}` + qs();
+
+    // Most FastAPI setups expect JSON body
+    const r = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token }),
+    });
+
+    const data = await r.json().catch(() => ({}));
+
+    if (!r.ok) {
+      setStatus("keysStatus", "Revoke failed:\nHTTP " + r.status + "\n" + JSON.stringify(data, null, 2), "bad");
+      return;
+    }
+
+    // remove locally too
+    ALL_KEYS = ALL_KEYS.filter(x => x.license_key !== key);
+    saveLocalKeys();
+    renderKeys();
+    setStatus("keysStatus", "Revoked " + key, "ok");
+
+  } catch (e) {
+    setStatus("keysStatus", "Error: " + String(e), "bad");
   }
+}
 
   function removeLocal(key){
     if (!confirm("Remove local record for " + key + " ? (does NOT revoke on server)")) return;

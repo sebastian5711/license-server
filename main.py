@@ -1,28 +1,20 @@
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
-from typing import Optional, Literal, List
+from typing import Literal
 import sqlite3, secrets, datetime
 
-from fastapi import FastAPI, Request
+from fastapi import Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 
-@app.get("/admin", response_class=HTMLResponse)
-async def admin_page(request: Request):
-    # Your token check can be here if you want
-    return templates.TemplateResponse("admin.html", {"request": request})
-
-
 ADMIN_TOKEN = "CHANGE_ME_ADMIN_TOKEN"
-
-app = FastAPI()
+DB_PATH = "licenses.db"
 
 def db():
-    conn = sqlite3.connect("licenses.db")
+    conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -72,6 +64,12 @@ class ActivateReq(BaseModel):
     license_key: str
     hwid: str
 
+@app.get("/admin", response_class=HTMLResponse)
+async def admin_page(request: Request, token: str | None = None):
+    if not token or token != ADMIN_TOKEN:
+        return HTMLResponse("<h3>Unauthorized</h3><p>Use /admin?token=YOUR_ADMIN_TOKEN</p>", status_code=401)
+    return templates.TemplateResponse("admin.html", {"request": request, "token": token})
+
 @app.post("/admin/create_keys")
 def admin_create_keys(req: AdminCreateKeys):
     require_admin(req.token)
@@ -108,6 +106,7 @@ def admin_list_keys(token: str):
         LIMIT 5000
     """).fetchall()
     conn.close()
+
     keys = []
     for r in rows:
         keys.append({
@@ -128,7 +127,7 @@ def admin_reset_hwid(license_key: str, token: str):
     require_admin(token)
     conn = db()
     cur = conn.cursor()
-    cur.execute("UPDATE license_keys SET hwid = NULL WHERE license_key = ?", (license_key,))
+    cur.execute("UPDATE license_keys SET hwid = NULL, activated_at=NULL, expires_at=NULL WHERE license_key = ?", (license_key,))
     if cur.rowcount == 0:
         conn.close()
         raise HTTPException(404, detail="Key not found")
@@ -179,14 +178,12 @@ def activate(req: ActivateReq):
         conn.close()
         raise HTTPException(401, detail="Key revoked")
 
-    # timed expiry check (if already activated)
     if row["key_type"] == "timed" and row["expires_at"]:
-        # iso compare is OK because same format UTC Z
         if now_iso() > row["expires_at"]:
             conn.close()
             raise HTTPException(401, detail="Key expired")
 
-    # first activation: bind HWID
+    # First activation: bind HWID
     if not row["hwid"]:
         expires_at = None
         activated_at = now_iso()
@@ -201,7 +198,7 @@ def activate(req: ActivateReq):
         conn.close()
         return {"ok": True, "status": "BOUND", "expires_at": expires_at or "NEVER"}
 
-    # already bound: must match
+    # Already bound: must match
     if row["hwid"] != req.hwid:
         conn.close()
         raise HTTPException(401, detail="HWID mismatch")

@@ -20,7 +20,7 @@
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
       background: var(--bg);
       color: var(--text);
     }
@@ -28,33 +28,14 @@
       padding: 18px 22px;
       border-bottom: 1px solid var(--border);
       background: linear-gradient(180deg, #101012, #0f0f10);
-      position: sticky;
-      top: 0;
-      z-index: 10;
+      position: sticky; top: 0; z-index: 10;
     }
-    header h1 {
-      margin: 0;
-      font-size: 18px;
-      letter-spacing: 0.4px;
-    }
-    header .sub {
-      margin-top: 6px;
-      color: var(--muted);
-      font-size: 12px;
-    }
+    header h1 { margin: 0; font-size: 18px; letter-spacing: 0.4px; }
+    header .sub { margin-top: 6px; color: var(--muted); font-size: 12px; }
 
-    .wrap {
-      padding: 18px 22px;
-      max-width: 1100px;
-      margin: 0 auto;
-    }
+    .wrap { padding: 18px 22px; max-width: 1100px; margin: 0 auto; }
 
-    .tabs {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 14px;
-    }
+    .tabs { display:flex; gap:10px; flex-wrap:wrap; margin-bottom: 14px; }
     .tabbtn {
       background: var(--panel);
       border: 1px solid var(--border);
@@ -65,11 +46,7 @@
       font-weight: 700;
       font-size: 13px;
     }
-    .tabbtn.active {
-      background: var(--accent);
-      color: #111;
-      border-color: transparent;
-    }
+    .tabbtn.active { background: var(--accent); color:#111; border-color: transparent; }
 
     .panel {
       background: var(--panel);
@@ -78,44 +55,24 @@
       padding: 16px;
       margin-bottom: 16px;
     }
-    .panel h2 {
-      margin: 0 0 12px 0;
-      font-size: 16px;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-    @media (max-width: 900px) {
-      .grid { grid-template-columns: 1fr; }
-    }
+    .panel h2 { margin: 0 0 12px 0; font-size: 16px; }
+    .grid { display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 900px){ .grid { grid-template-columns: 1fr; } }
 
-    label {
-      display: block;
-      font-size: 12px;
-      color: var(--muted);
-      margin-bottom: 6px;
-      font-weight: 700;
-    }
-    input, select, textarea {
-      width: 100%;
+    label { display:block; font-size:12px; color:var(--muted); margin-bottom:6px; font-weight:700; }
+    input {
+      width:100%;
       background: var(--panel2);
-      border: 1px solid var(--border);
+      border:1px solid var(--border);
       color: var(--text);
       padding: 10px 12px;
       border-radius: 10px;
-      outline: none;
-      height: 44px;
+      outline:none;
+      height:44px;
     }
-    input:focus, select:focus, textarea:focus { border-color: #444; }
+    input:focus { border-color:#444; }
 
-    .row {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
+    .row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
 
     .btn{
       height:44px;
@@ -127,20 +84,13 @@
       font-weight:700;
       cursor:pointer;
       min-width: 140px;
-      text-align: center;
+      text-align:center;
     }
     .btn:hover{ background:rgba(255,255,255,.10); }
-    .btn.primary{
-      background:#fff;
-      color:#111;
-      border-color:transparent;
-    }
+    .btn.primary{ background:#fff; color:#111; border-color:transparent; }
     .btn.primary:hover{ background:rgba(255,255,255,.90); }
-    .btn.danger {
-      background: transparent;
-      color: var(--danger);
-      border: 1px solid rgba(255,77,77,0.35);
-    }
+    .btn.danger{ background:transparent; color:var(--danger); border:1px solid rgba(255,77,77,0.35); }
+    .btn:disabled{ opacity:.55; cursor:not-allowed; }
 
     .status {
       margin-top: 10px;
@@ -157,46 +107,38 @@
     .status.warn { color: var(--warn); border-color: rgba(255,176,32,0.35); }
 
     table {
-      width: 100%;
-      border-collapse: collapse;
-      overflow: hidden;
-      border-radius: 12px;
-      border: 1px solid var(--border);
+      width:100%;
+      border-collapse:collapse;
+      overflow:hidden;
+      border-radius:12px;
+      border:1px solid var(--border);
       background: var(--panel2);
     }
     th, td {
-      padding: 10px;
-      border-bottom: 1px solid var(--border);
-      font-size: 12px;
-      vertical-align: top;
+      padding:10px;
+      border-bottom:1px solid var(--border);
+      font-size:12px;
+      vertical-align:top;
     }
-    th {
-      text-align: left;
-      color: var(--muted);
-      font-weight: 900;
-      background: #17171a;
-    }
-    tr:hover td { background: #1b1b1f; }
+    th { text-align:left; color:var(--muted); font-weight:900; background:#17171a; }
+    tr:hover td { background:#1b1b1f; }
 
     .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
     .pill {
-      display: inline-block;
-      padding: 3px 8px;
-      border-radius: 999px;
-      font-weight: 900;
-      font-size: 11px;
-      border: 1px solid var(--border);
-      background: #141416;
-      color: var(--muted);
+      display:inline-block;
+      padding:3px 8px;
+      border-radius:999px;
+      font-weight:900;
+      font-size:11px;
+      border:1px solid var(--border);
+      background:#141416;
+      color:var(--muted);
     }
     .pill.ok { color: var(--ok); border-color: rgba(76,175,80,0.35); }
     .pill.warn { color: var(--warn); border-color: rgba(255,176,32,0.35); }
+    .pill.bad { color: var(--danger); border-color: rgba(255,77,77,0.35); }
 
-    .small {
-      font-size: 12px;
-      color: var(--muted);
-      margin-top: 6px;
-    }
+    .small { font-size: 12px; color: var(--muted); margin-top:6px; }
   </style>
 </head>
 <body>
@@ -212,46 +154,43 @@
     <button class="tabbtn" data-tab="keys" onclick="showTab('keys')">Key Manager</button>
   </div>
 
-  <!-- Lifetime -->
   <div id="lifetime" class="panel">
     <h2>Create Lifetime Keys</h2>
     <div class="grid">
       <div>
         <label>How many keys?</label>
-        <input id="lifeCount" type="number" min="1" value="1" />
+        <input id="lifeCount" type="number" min="1" max="500" value="1" />
         <div class="small">Creates keys that never expire.</div>
       </div>
       <div></div>
       <div class="row" style="grid-column: 1 / -1;">
-        <button class="btn primary" onclick="createKeys('lifetime')">Create Lifetime</button>
+        <button id="btnLife" class="btn primary" onclick="createKeys('lifetime')">Create Lifetime</button>
         <button class="btn" onclick="loadKeys()">Refresh List</button>
       </div>
     </div>
     <div id="lifeStatus" class="status">Ready.</div>
   </div>
 
-  <!-- Timed -->
   <div id="timed" class="panel" style="display:none;">
     <h2>Create Timed Keys</h2>
     <div class="grid">
       <div>
         <label>Days</label>
         <input id="timedDays" type="number" min="1" value="30" />
-        <div class="small">Example: 30 means it expires 30 days after first activation.</div>
+        <div class="small">Expires X days after first activation (HWID bind).</div>
       </div>
       <div>
         <label>How many keys?</label>
-        <input id="timedCount" type="number" min="1" value="5" />
+        <input id="timedCount" type="number" min="1" max="500" value="5" />
       </div>
       <div class="row" style="grid-column: 1 / -1;">
-        <button class="btn primary" onclick="createKeys('timed')">Create Timed</button>
+        <button id="btnTimed" class="btn primary" onclick="createKeys('timed')">Create Timed</button>
         <button class="btn" onclick="loadKeys()">Refresh List</button>
       </div>
     </div>
     <div id="timedStatus" class="status">Ready.</div>
   </div>
 
-  <!-- Key Manager -->
   <div id="keys" class="panel" style="display:none;">
     <h2>Key Manager</h2>
 
@@ -271,7 +210,7 @@
             <th style="min-width:180px;">Expires</th>
             <th style="min-width:220px;">HWID</th>
             <th style="min-width:260px;">Note</th>
-            <th style="min-width:260px;">Actions</th>
+            <th style="min-width:340px;">Actions</th>
           </tr>
         </thead>
         <tbody id="keysBody">
@@ -285,24 +224,19 @@
 </div>
 
 <script>
-  // ===== YOUR REAL SERVER ENDPOINTS (from /docs screenshot) =====
   const API = {
-  create: "/admin/create_keys",
-  revoke: "/admin/revoke" // note: this one needs /{license_key} in the request
-};
+    create: "/admin/create_keys",
+    list: "/admin/keys",
+    resetHwid: "/admin/reset_hwid",
+    revoke: "/admin/revoke",
+    note: "/admin/note",
+  };
 
-  // ===== LOCAL STORAGE (because backend has NO "list keys" endpoint) =====
-  const STORE_KEY = "NOVAMACRO_KEYS_LOCAL";
   let ALL_KEYS = [];
+  let BUSY = false;
 
-  function qs() { return window.location.search || ""; }
+  function qs(){ return window.location.search || ""; }
   function getToken(){ return new URLSearchParams(window.location.search).get("token") || ""; }
-
-  function saveLocalKeys(){ localStorage.setItem(STORE_KEY, JSON.stringify(ALL_KEYS)); }
-  function loadLocalKeys(){
-    try { ALL_KEYS = JSON.parse(localStorage.getItem(STORE_KEY) || "[]"); }
-    catch { ALL_KEYS = []; }
-  }
 
   function showTab(name){
     document.querySelectorAll(".tabbtn").forEach(b => b.classList.toggle("active", b.dataset.tab === name));
@@ -318,75 +252,98 @@
     if (kind) el.classList.add(kind);
   }
 
-  function loadKeys(){
-    loadLocalKeys();
-    document.getElementById("keysMeta").textContent = `Loaded ${ALL_KEYS.length} keys (local storage).`;
-    renderKeys();
-    setStatus("keysStatus", "Ready.", null);
+  function setBusy(on){
+    BUSY = on;
+    const btnLife = document.getElementById("btnLife");
+    const btnTimed = document.getElementById("btnTimed");
+    if (btnLife) btnLife.disabled = on;
+    if (btnTimed) btnTimed.disabled = on;
   }
 
-async function createKeys(type){
-  const statusId = (type === "lifetime") ? "lifeStatus" : "timedStatus";
+  async function createKeys(type){
+    const statusId = (type === "lifetime") ? "lifeStatus" : "timedStatus";
+    if (BUSY) return;
 
-  try {
-    const token = getToken();
-    if (!token) {
-      setStatus(statusId, "Missing token. Open like: /admin?token=YOUR_ADMIN_TOKEN", "bad");
-      return;
-    }
+    try {
+      const token = getToken();
+      if (!token) {
+        setStatus(statusId, "Missing token. Open like: /admin?token=YOUR_ADMIN_TOKEN", "bad");
+        return;
+      }
 
-    setStatus(statusId, "Creating...", "warn");
-
-    const payload = {
-      token,
-      key_type: (type === "lifetime") ? "lifetime" : "timed",
-      count: (type === "lifetime")
+      const count = (type === "lifetime")
         ? parseInt(document.getElementById("lifeCount").value || "1", 10)
-        : parseInt(document.getElementById("timedCount").value || "1", 10),
-      days: (type === "lifetime")
+        : parseInt(document.getElementById("timedCount").value || "1", 10);
+
+      const days = (type === "lifetime")
         ? 0
-        : parseInt(document.getElementById("timedDays").value || "30", 10),
-    };
+        : parseInt(document.getElementById("timedDays").value || "30", 10);
 
-    const r = await fetch(API.create + qs(), {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+      setBusy(true);
+      setStatus(statusId, "Creating...", "warn");
 
-    const data = await r.json().catch(() => ({}));
+      const payload = {
+        token,
+        key_type: (type === "lifetime") ? "lifetime" : "timed",
+        count: Math.max(1, Math.min(count, 500)),
+        days: (type === "lifetime") ? 0 : Math.max(1, days),
+      };
 
-    if (!r.ok) {
-      setStatus(statusId, "Create failed:\nHTTP " + r.status + "\n" + JSON.stringify(data, null, 2), "bad");
-      return;
-    }
-
-    const created = data.keys || data.created_keys || [];
-    if (!Array.isArray(created) || created.length === 0) {
-      setStatus(statusId, "Created OK but server returned no keys:\n" + JSON.stringify(data, null, 2), "warn");
-      return;
-    }
-
-    // save locally for Key Manager
-    for (const k of created) {
-      ALL_KEYS.unshift({
-        license_key: k,
-        type: type === "lifetime" ? "LIFETIME" : "TIMED",
-        expires_at: type === "lifetime" ? "NEVER" : "(server)",
-        hwid: "",
-        note: ""
+      const r = await fetch(API.create, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
       });
+
+      const data = await r.json().catch(() => ({}));
+
+      if (!r.ok || data.ok === false) {
+        setStatus(statusId, "Create failed:\nHTTP " + r.status + "\n" + JSON.stringify(data, null, 2), "bad");
+        return;
+      }
+
+      const created = data.keys || [];
+      if (!Array.isArray(created) || created.length === 0) {
+        setStatus(statusId, "Created but server returned no keys:\n" + JSON.stringify(data, null, 2), "warn");
+        return;
+      }
+
+      setStatus(statusId, "Created:\n" + created.join("\n"), "ok");
+
+      await loadKeys();
+      showTab("keys");
+    } catch (e) {
+      setStatus(statusId, "Error: " + String(e), "bad");
+    } finally {
+      setBusy(false);
     }
-
-    saveLocalKeys();
-    setStatus(statusId, "Created:\n" + created.join("\n"), "ok");
-
-    loadKeys();
-    showTab("keys");
-  } catch (e) {
-    setStatus(statusId, "Error: " + String(e), "bad");
   }
-}
+
+  async function loadKeys(){
+    try {
+      const token = getToken();
+      if (!token) {
+        setStatus("keysStatus", "Missing token in URL.", "bad");
+        return;
+      }
+
+      setStatus("keysStatus", "Loading keys...", "warn");
+      const r = await fetch(API.list + "?token=" + encodeURIComponent(token));
+      const data = await r.json().catch(() => ({}));
+
+      if (!r.ok || data.ok === false) {
+        setStatus("keysStatus", "Load failed:\n" + JSON.stringify(data, null, 2), "bad");
+        return;
+      }
+
+      ALL_KEYS = data.keys || [];
+      document.getElementById("keysMeta").textContent = `Loaded ${ALL_KEYS.length} keys.`;
+      renderKeys();
+      setStatus("keysStatus", "Ready.", null);
+    } catch (e) {
+      setStatus("keysStatus", "Error: " + String(e), "bad");
+    }
+  }
 
   function renderKeys(){
     const q = (document.getElementById("searchBox").value || "").toLowerCase().trim();
@@ -406,16 +363,17 @@ async function createKeys(type){
     for (const k of filtered){
       const key = k.license_key || "";
       const type = (k.type || "").toUpperCase();
-      const expires = k.expires_at || "NEVER";
+      const expires = k.expires_at || (type === "LIFETIME" ? "NEVER" : "-");
       const hwid = k.hwid || "";
+      const revoked = !!k.revoked;
 
       const typePill = type === "LIFETIME"
         ? `<span class="pill ok">LIFETIME</span>`
         : `<span class="pill warn">TIMED</span>`;
 
-      const hwidPill = hwid
-        ? `<span class="pill ok">BOUND</span>`
-        : `<span class="pill">NOT BOUND</span>`;
+      const statusPill = revoked
+        ? `<span class="pill bad">REVOKED</span>`
+        : (hwid ? `<span class="pill ok">BOUND</span>` : `<span class="pill">NOT BOUND</span>`);
 
       const tr = document.createElement("tr");
       tr.innerHTML = `
@@ -423,7 +381,7 @@ async function createKeys(type){
         <td>${typePill}</td>
         <td class="mono">${escapeHtml(expires)}</td>
         <td>
-          ${hwidPill}
+          ${statusPill}
           <div class="mono" style="margin-top:6px; word-break:break-all; color:var(--muted);">${escapeHtml(hwid || "-")}</div>
         </td>
         <td>
@@ -433,9 +391,8 @@ async function createKeys(type){
           <div class="row">
             <button class="btn" onclick="copyText('${escapeJs(key)}')">Copy</button>
             <button class="btn" onclick="saveNote('${escapeJs(key)}')">Save Note</button>
-            <button class="btn" onclick="resetHwidLocal('${escapeJs(key)}')">Reset HWID</button>
+            <button class="btn" onclick="resetHwid('${escapeJs(key)}')">Reset HWID</button>
             <button class="btn danger" onclick="revokeKey('${escapeJs(key)}')">Revoke</button>
-            <button class="btn danger" onclick="removeLocal('${escapeJs(key)}')">Remove Local</button>
           </div>
         </td>
       `;
@@ -443,69 +400,75 @@ async function createKeys(type){
     }
   }
 
-  function saveNote(key){
-    const val = document.getElementById("note_" + escapeId(key)).value || "";
-    const item = ALL_KEYS.find(x => x.license_key === key);
-    if (item) item.note = val;
-    saveLocalKeys();
-    setStatus("keysStatus", "Note saved locally for " + key, "ok");
-  }
+  async function saveNote(key){
+    try {
+      const token = getToken();
+      const val = document.getElementById("note_" + escapeId(key)).value || "";
+      setStatus("keysStatus", "Saving note...", "warn");
 
-  function resetHwidLocal(key){
-    // Local UI only (your backend doesn't provide reset endpoint in your /docs screenshot)
-    const item = ALL_KEYS.find(x => x.license_key === key);
-    if (item) item.hwid = "";
-    saveLocalKeys();
-    renderKeys();
-    setStatus("keysStatus", "HWID reset locally for " + key + " (UI only)", "warn");
-  }
+      const r = await fetch(API.note + "/" + encodeURIComponent(key), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token, note: val }),
+      });
+      const data = await r.json().catch(() => ({}));
 
-async function revokeKey(key){
-  if (!confirm("REVOKE key " + key + " ?")) return;
+      if (!r.ok || data.ok === false) {
+        setStatus("keysStatus", "Save note failed:\n" + JSON.stringify(data, null, 2), "bad");
+        return;
+      }
 
-  try {
-    const token = getToken();
-    if (!token) {
-      setStatus("keysStatus", "Missing token in URL. Use /admin?token=YOUR_ADMIN_TOKEN", "bad");
-      return;
+      setStatus("keysStatus", "Note saved for " + key, "ok");
+      await loadKeys();
+    } catch (e) {
+      setStatus("keysStatus", "Error: " + String(e), "bad");
     }
-
-    setStatus("keysStatus", "Revoking...", "warn");
-
-    // Correct endpoint: /admin/revoke/{license_key}
-    const url = `/admin/revoke/${encodeURIComponent(key)}` + qs();
-
-    // Most FastAPI setups expect JSON body
-    const r = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token }),
-    });
-
-    const data = await r.json().catch(() => ({}));
-
-    if (!r.ok) {
-      setStatus("keysStatus", "Revoke failed:\nHTTP " + r.status + "\n" + JSON.stringify(data, null, 2), "bad");
-      return;
-    }
-
-    // remove locally too
-    ALL_KEYS = ALL_KEYS.filter(x => x.license_key !== key);
-    saveLocalKeys();
-    renderKeys();
-    setStatus("keysStatus", "Revoked " + key, "ok");
-
-  } catch (e) {
-    setStatus("keysStatus", "Error: " + String(e), "bad");
   }
-}
 
-  function removeLocal(key){
-    if (!confirm("Remove local record for " + key + " ? (does NOT revoke on server)")) return;
-    ALL_KEYS = ALL_KEYS.filter(x => x.license_key !== key);
-    saveLocalKeys();
-    renderKeys();
-    setStatus("keysStatus", "Removed locally: " + key, "ok");
+  async function resetHwid(key){
+    if (!confirm("Reset HWID for " + key + " ?")) return;
+    try {
+      const token = getToken();
+      setStatus("keysStatus", "Resetting HWID...", "warn");
+
+      const r = await fetch(API.resetHwid + "/" + encodeURIComponent(key) + "?token=" + encodeURIComponent(token), {
+        method: "POST",
+      });
+      const data = await r.json().catch(() => ({}));
+
+      if (!r.ok || data.ok === false) {
+        setStatus("keysStatus", "Reset HWID failed:\n" + JSON.stringify(data, null, 2), "bad");
+        return;
+      }
+
+      setStatus("keysStatus", "HWID reset for " + key, "ok");
+      await loadKeys();
+    } catch (e) {
+      setStatus("keysStatus", "Error: " + String(e), "bad");
+    }
+  }
+
+  async function revokeKey(key){
+    if (!confirm("REVOKE key " + key + " ?")) return;
+    try {
+      const token = getToken();
+      setStatus("keysStatus", "Revoking...", "warn");
+
+      const r = await fetch(API.revoke + "/" + encodeURIComponent(key) + "?token=" + encodeURIComponent(token), {
+        method: "POST",
+      });
+      const data = await r.json().catch(() => ({}));
+
+      if (!r.ok || data.ok === false) {
+        setStatus("keysStatus", "Revoke failed:\n" + JSON.stringify(data, null, 2), "bad");
+        return;
+      }
+
+      setStatus("keysStatus", "Revoked " + key, "ok");
+      await loadKeys();
+    } catch (e) {
+      setStatus("keysStatus", "Error: " + String(e), "bad");
+    }
   }
 
   function copyText(t){
@@ -516,9 +479,7 @@ async function revokeKey(key){
     });
   }
 
-  function escapeHtml(s){
-    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  }
+  function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
   function escapeAttr(s){ return String(s).replace(/"/g, "&quot;"); }
   function escapeJs(s){ return String(s).replace(/\\/g, "\\\\").replace(/'/g, "\\'"); }
   function escapeId(s){ return String(s).replace(/[^a-zA-Z0-9_-]/g, "_"); }

@@ -106,6 +106,7 @@
       padding: 10px 12px;
       border-radius: 10px;
       outline: none;
+      height: 44px;
     }
     input:focus, select:focus, textarea:focus { border-color: #444; }
 
@@ -116,50 +117,25 @@
       flex-wrap: wrap;
     }
 
-    .key-row{
-  display:flex;
-  gap:10px;
-  align-items:center;
-  flex-wrap:wrap;
-}
-.key-row input{
-  flex:1;
-  min-width:260px;
-}
-input, select{
-  height:44px; /* match button height */
-}
-
-
-.btn{
-  height:44px;
-  padding:0 18px;
-  border-radius:12px;
-  border:1px solid rgba(255,255,255,.12);
-  background:rgba(255,255,255,.06);
-  color:#fff;
-  font-weight:700;
-  cursor:pointer;
-
-  min-width: 140px;   /* make buttons same width */
-  text-align: center;
-} 
-
-.btn:hover{
-  background:rgba(255,255,255,.10);
-}
-
-.btn.primary{
-  background:#fff;
-  color:#111;
-  border-color:transparent;
-}
-
-.btn.primary:hover{
-  background:rgba(255,255,255,.90);
-}
-
-    
+    .btn{
+      height:44px;
+      padding:0 18px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.06);
+      color:#fff;
+      font-weight:700;
+      cursor:pointer;
+      min-width: 140px;
+      text-align: center;
+    }
+    .btn:hover{ background:rgba(255,255,255,.10); }
+    .btn.primary{
+      background:#fff;
+      color:#111;
+      border-color:transparent;
+    }
+    .btn.primary:hover{ background:rgba(255,255,255,.90); }
     .btn.danger {
       background: transparent;
       color: var(--danger);
@@ -201,6 +177,7 @@ input, select{
       background: #17171a;
     }
     tr:hover td { background: #1b1b1f; }
+
     .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
     .pill {
       display: inline-block;
@@ -213,7 +190,6 @@ input, select{
       color: var(--muted);
     }
     .pill.ok { color: var(--ok); border-color: rgba(76,175,80,0.35); }
-    .pill.bad { color: var(--danger); border-color: rgba(255,77,77,0.35); }
     .pill.warn { color: var(--warn); border-color: rgba(255,176,32,0.35); }
 
     .small {
@@ -237,28 +213,22 @@ input, select{
   </div>
 
   <!-- Lifetime -->
-  <!-- Lifetime -->
-<div id="lifetime" class="panel">
-  <h2>Create Lifetime Keys</h2>
-  <div class="grid">
-    <div>
-      <label>How many keys?</label>
-      <input id="lifeCount" type="number" min="1" value="1" />
-      <div class="small">Creates keys that never expire.</div>
+  <div id="lifetime" class="panel">
+    <h2>Create Lifetime Keys</h2>
+    <div class="grid">
+      <div>
+        <label>How many keys?</label>
+        <input id="lifeCount" type="number" min="1" value="1" />
+        <div class="small">Creates keys that never expire.</div>
+      </div>
+      <div></div>
+      <div class="row" style="grid-column: 1 / -1;">
+        <button class="btn primary" onclick="createKeys('lifetime')">Create Lifetime</button>
+        <button class="btn" onclick="loadKeys()">Refresh List</button>
+      </div>
     </div>
-
-    <div>
-      <!-- empty right column (keeps same layout as Timed) -->
-    </div>
-
-    <div class="row" style="grid-column: 1 / -1;">
-      <button class="btn primary" onclick="createKeys('lifetime')">Create Lifetime</button>
-      <button class="btn" onclick="loadKeys()">Refresh List</button>
-    </div>
+    <div id="lifeStatus" class="status">Ready.</div>
   </div>
-
-  <div id="lifeStatus" class="status">Ready.</div>
-</div>
 
   <!-- Timed -->
   <div id="timed" class="panel" style="display:none;">
@@ -267,16 +237,16 @@ input, select{
       <div>
         <label>Days</label>
         <input id="timedDays" type="number" min="1" value="30" />
-        <div class="small">Example: 30 means it expires 30 days after first activation (depends on your backend rule).</div>
+        <div class="small">Example: 30 means it expires 30 days after first activation.</div>
       </div>
       <div>
         <label>How many keys?</label>
         <input id="timedCount" type="number" min="1" value="5" />
       </div>
-      <div class="key-row" style="grid-column: 1 / -1;">
-  <button class="btn primary" onclick="createKeys('timed')">Create Timed</button>
-  <button class="btn" onclick="loadKeys()">Refresh List</button>
-</div>
+      <div class="row" style="grid-column: 1 / -1;">
+        <button class="btn primary" onclick="createKeys('timed')">Create Timed</button>
+        <button class="btn" onclick="loadKeys()">Refresh List</button>
+      </div>
     </div>
     <div id="timedStatus" class="status">Ready.</div>
   </div>
@@ -291,6 +261,7 @@ input, select{
     </div>
 
     <div class="small" id="keysMeta">No data loaded yet.</div>
+
     <div style="margin-top:10px; overflow:auto;">
       <table>
         <thead>
@@ -314,57 +285,24 @@ input, select{
 </div>
 
 <script>
-  // Change these if your backend paths are different:
-  // We will auto-detect which route exists on YOUR server
-const API_CANDIDATES = {
-  listKeys: ["/admin/web/keys", "/admin/keys", "/admin/keys/list", "/admin/list-keys"],
-  create:   ["/admin/web/create", "/admin/create", "/admin/create-key", "/admin/keys/create"],
-  resetHwid:["/admin/web/reset-hwid", "/admin/reset-hwid", "/admin/hwid/reset"],
-  deleteKey:["/admin/web/delete", "/admin/delete", "/admin/key/delete", "/admin/keys/delete"],
-  setNote:  ["/admin/web/note", "/admin/note", "/admin/key/note", "/admin/keys/note"],
-};
+  // ===== YOUR REAL SERVER ENDPOINTS (from /docs screenshot) =====
+  const API = {
+    create: "/admin/web/create",
+    revoke: "/admin/web/revoke"
+  };
 
-const API = { listKeys:"", create:"", resetHwid:"", deleteKey:"", setNote:"" };
-
+  // ===== LOCAL STORAGE (because backend has NO "list keys" endpoint) =====
+  const STORE_KEY = "NOVAMACRO_KEYS_LOCAL";
   let ALL_KEYS = [];
-  
-  function qs() {
-    return window.location.search || "";
+
+  function qs() { return window.location.search || ""; }
+  function getToken(){ return new URLSearchParams(window.location.search).get("token") || ""; }
+
+  function saveLocalKeys(){ localStorage.setItem(STORE_KEY, JSON.stringify(ALL_KEYS)); }
+  function loadLocalKeys(){
+    try { ALL_KEYS = JSON.parse(localStorage.getItem(STORE_KEY) || "[]"); }
+    catch { ALL_KEYS = []; }
   }
-
-  function getToken(){
-  return new URLSearchParams(window.location.search).get("token") || "";
-}
-
-async function detectEndpoint(name){
-  // Try each candidate until one is NOT 404
-  for (const path of API_CANDIDATES[name]) {
-    try {
-      // Try GET first (some servers use GET for list)
-      let r = await fetch(path + qs(), { method: "GET" });
-      if (r.status !== 404) return path;
-
-      // Try POST (some servers require token in body)
-      const fd = new FormData();
-      fd.append("token", getToken());
-      r = await fetch(path + qs(), { method: "POST", body: fd });
-      if (r.status !== 404) return path;
-
-    } catch (e) {}
-  }
-  return ""; // none found
-}
-
-async function ensureAPI(){
-  if (API.listKeys) return; // already detected
-
-  API.listKeys  = await detectEndpoint("listKeys");
-  API.create    = await detectEndpoint("create");
-  API.resetHwid = await detectEndpoint("resetHwid");
-  API.deleteKey = await detectEndpoint("deleteKey");
-  API.setNote   = await detectEndpoint("setNote");
-}
-
 
   function showTab(name){
     document.querySelectorAll(".tabbtn").forEach(b => b.classList.toggle("active", b.dataset.tab === name));
@@ -380,33 +318,37 @@ async function ensureAPI(){
     if (kind) el.classList.add(kind);
   }
 
+  function loadKeys(){
+    loadLocalKeys();
+    document.getElementById("keysMeta").textContent = `Loaded ${ALL_KEYS.length} keys (local storage).`;
+    renderKeys();
+    setStatus("keysStatus", "Ready.", null);
+  }
+
   async function createKeys(type){
     const statusId = (type === "lifetime") ? "lifeStatus" : "timedStatus";
     try {
+      const token = getToken();
+      if (!token) {
+        setStatus(statusId, "Missing token. Open like: /admin?token=YOUR_ADMIN_TOKEN", "bad");
+        return;
+      }
+
       setStatus(statusId, "Creating...", "warn");
 
       const fd = new FormData();
+      fd.append("token", token);
+      fd.append("key_type", type === "lifetime" ? "lifetime" : "timed");
+
       if (type === "lifetime") {
-        fd.append("token", new URLSearchParams(window.location.search).get("token") || "");
-        fd.append("key_type", "lifetime");
         fd.append("count", String(parseInt(document.getElementById("lifeCount").value || "1", 10)));
         fd.append("days", "0");
-
       } else {
-        fd.append("token", new URLSearchParams(window.location.search).get("token") || "");
-        fd.append("key_type", "timed");
         fd.append("days", String(parseInt(document.getElementById("timedDays").value || "30", 10)));
         fd.append("count", String(parseInt(document.getElementById("timedCount").value || "1", 10)));
-
       }
 
-      await ensureAPI();
-if (!API.create) {
-  setStatus(statusId, "Create failed:\nNo working CREATE endpoint found on server.", "bad");
-  return;
-}
-
-const r = await fetch(API.create + qs(), { method: "POST", body: fd });
+      const r = await fetch(API.create + qs(), { method: "POST", body: fd });
       const data = await r.json().catch(() => ({}));
 
       if (!r.ok || data.ok === false) {
@@ -415,50 +357,36 @@ const r = await fetch(API.create + qs(), { method: "POST", body: fd });
       }
 
       const created = data.keys || data.created_keys || [];
+      if (!Array.isArray(created) || created.length === 0) {
+        setStatus(statusId, "Created OK, but server did not return keys:\n" + JSON.stringify(data, null, 2), "warn");
+        return;
+      }
+
+      // Save keys locally so Key Manager can show them
+      for (const k of created) {
+        ALL_KEYS.unshift({
+          license_key: k,
+          type: type === "lifetime" ? "LIFETIME" : "TIMED",
+          expires_at: type === "lifetime" ? "NEVER" : "(server)",
+          hwid: "",
+          note: ""
+        });
+      }
+      saveLocalKeys();
+
       setStatus(statusId, "Created:\n" + created.join("\n"), "ok");
 
-      await loadKeys(); // refresh list
+      loadKeys();
       showTab("keys");
     } catch (e) {
       setStatus(statusId, "Error: " + String(e), "bad");
     }
   }
 
-async function loadKeys(){
-  try {
-    await ensureAPI();
-    if (!API.listKeys) {
-      setStatus("keysStatus", "Load failed:\nNo working listKeys endpoint found.\nYour backend route name is different.", "bad");
-      return;
-    }
-    setStatus("keysStatus", "Loading keys...", "warn");
-
-    const fd = new FormData();
-    fd.append("token", getToken());
-
-    // backend expects token in BODY
-    const r = await fetch(API.listKeys + qs(), { method: "POST", body: fd });
-    const data = await r.json().catch(() => ({}));
-
-    if (!r.ok || data.ok === false) {
-      setStatus("keysStatus", "Load failed:\n" + JSON.stringify(data, null, 2), "bad");
-      return;
-    }
-
-    ALL_KEYS = data.keys || [];
-    document.getElementById("keysMeta").textContent = `Loaded ${ALL_KEYS.length} keys.`;
-    renderKeys();
-    setStatus("keysStatus", "Ready.", null);
-  } catch (e) {
-    setStatus("keysStatus", "Error: " + String(e), "bad");
-  }
-}
-
-
   function renderKeys(){
     const q = (document.getElementById("searchBox").value || "").toLowerCase().trim();
     const filtered = ALL_KEYS.filter(k => {
-      const s = (String(k.license_key || "") + " " + String(k.note || "") + " " + String(k.hwid || "")).toLowerCase();
+      const s = (String(k.license_key||"") + " " + String(k.note||"") + " " + String(k.hwid||"")).toLowerCase();
       return s.includes(q);
     });
 
@@ -500,8 +428,9 @@ async function loadKeys(){
           <div class="row">
             <button class="btn" onclick="copyText('${escapeJs(key)}')">Copy</button>
             <button class="btn" onclick="saveNote('${escapeJs(key)}')">Save Note</button>
-            <button class="btn" onclick="resetHwid('${escapeJs(key)}')">Reset HWID</button>
-            <button class="btn danger" onclick="deleteKey('${escapeJs(key)}')">Delete</button>
+            <button class="btn" onclick="resetHwidLocal('${escapeJs(key)}')">Reset HWID</button>
+            <button class="btn danger" onclick="revokeKey('${escapeJs(key)}')">Revoke</button>
+            <button class="btn danger" onclick="removeLocal('${escapeJs(key)}')">Remove Local</button>
           </div>
         </td>
       `;
@@ -509,99 +438,62 @@ async function loadKeys(){
     }
   }
 
-  async function saveNote(key){
-    try {
-      const val = document.getElementById("note_" + escapeId(key)).value || "";
-      const fd = new FormData();
-      fd.append("token", getToken());
-      fd.append("license_key", key);
-      fd.append("note", val);
-
-
-      setStatus("keysStatus", "Saving note...", "warn");
-      await ensureAPI();
-if (!API.setNote) {
-  setStatus("keysStatus", "Save note failed:\nNo working NOTE endpoint found on server.", "bad");
-  return;
-}
-const r = await fetch(API.setNote + qs(), { method: "POST", body: fd });
-      const data = await r.json().catch(() => ({}));
-
-      if (!r.ok || data.ok === false) {
-        setStatus("keysStatus", "Save note failed:\n" + JSON.stringify(data, null, 2), "bad");
-        return;
-      }
-
-      // update local cache
-      const item = ALL_KEYS.find(x => x.license_key === key);
-      if (item) item.note = val;
-
-      setStatus("keysStatus", "Note saved for " + key, "ok");
-    } catch (e) {
-      setStatus("keysStatus", "Error: " + String(e), "bad");
-    }
+  function saveNote(key){
+    const val = document.getElementById("note_" + escapeId(key)).value || "";
+    const item = ALL_KEYS.find(x => x.license_key === key);
+    if (item) item.note = val;
+    saveLocalKeys();
+    setStatus("keysStatus", "Note saved locally for " + key, "ok");
   }
 
-  async function resetHwid(key){
-    if (!confirm("Reset HWID for " + key + " ? (It will allow binding to a new computer)")) return;
-    try {
-      const fd = new FormData();
-      fd.append("token", getToken());
-      fd.append("license_key", key);
-
-      setStatus("keysStatus", "Resetting HWID...", "warn");
-      await ensureAPI();
-if (!API.resetHwid) {
-  setStatus("keysStatus", "Reset HWID failed:\nNo working RESET endpoint found on server.", "bad");
-  return;
-}
-const r = await fetch(API.resetHwid + qs(), { method: "POST", body: fd });
-      const data = await r.json().catch(() => ({}));
-
-      if (!r.ok || data.ok === false) {
-        setStatus("keysStatus", "Reset HWID failed:\n" + JSON.stringify(data, null, 2), "bad");
-        return;
-      }
-
-      // update local cache
-      const item = ALL_KEYS.find(x => x.license_key === key);
-      if (item) item.hwid = "";
-
-      renderKeys();
-      setStatus("keysStatus", "HWID reset for " + key, "ok");
-    } catch (e) {
-      setStatus("keysStatus", "Error: " + String(e), "bad");
-    }
+  function resetHwidLocal(key){
+    // Local UI only (your backend doesn't provide reset endpoint in your /docs screenshot)
+    const item = ALL_KEYS.find(x => x.license_key === key);
+    if (item) item.hwid = "";
+    saveLocalKeys();
+    renderKeys();
+    setStatus("keysStatus", "HWID reset locally for " + key + " (UI only)", "warn");
   }
 
-  async function deleteKey(key){
-    if (!confirm("DELETE key " + key + " ? This cannot be undone.")) return;
+  async function revokeKey(key){
+    if (!confirm("REVOKE key " + key + " ?")) return;
+
     try {
-      const fd = new FormData();
-      fd.append("token", getToken());
-      fd.append("license_key", key);
-
-
-      setStatus("keysStatus", "Deleting key...", "warn");
-      await ensureAPI();
-if (!API.deleteKey) {
-  setStatus("keysStatus", "Delete failed:\nNo working DELETE endpoint found on server.", "bad");
-  return;
-}
-const r = await fetch(API.deleteKey + qs(), { method: "POST", body: fd });
-      const data = await r.json().catch(() => ({}));
-
-      if (!r.ok || data.ok === false) {
-        setStatus("keysStatus", "Delete failed:\n" + JSON.stringify(data, null, 2), "bad");
+      const token = getToken();
+      if (!token) {
+        setStatus("keysStatus", "Missing token in URL.", "bad");
         return;
       }
 
+      const fd = new FormData();
+      fd.append("token", token);
+      fd.append("license_key", key);
+
+      setStatus("keysStatus", "Revoking...", "warn");
+      const r = await fetch(API.revoke + qs(), { method: "POST", body: fd });
+      const data = await r.json().catch(() => ({}));
+
+      if (!r.ok || data.ok === false) {
+        setStatus("keysStatus", "Revoke failed:\n" + JSON.stringify(data, null, 2), "bad");
+        return;
+      }
+
+      // remove locally too
       ALL_KEYS = ALL_KEYS.filter(x => x.license_key !== key);
+      saveLocalKeys();
       renderKeys();
-      setStatus("keysStatus", "Deleted " + key, "ok");
+      setStatus("keysStatus", "Revoked " + key, "ok");
     } catch (e) {
       setStatus("keysStatus", "Error: " + String(e), "bad");
     }
+  }
+
+  function removeLocal(key){
+    if (!confirm("Remove local record for " + key + " ? (does NOT revoke on server)")) return;
+    ALL_KEYS = ALL_KEYS.filter(x => x.license_key !== key);
+    saveLocalKeys();
+    renderKeys();
+    setStatus("keysStatus", "Removed locally: " + key, "ok");
   }
 
   function copyText(t){
@@ -615,19 +507,12 @@ const r = await fetch(API.deleteKey + qs(), { method: "POST", body: fd });
   function escapeHtml(s){
     return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   }
-  function escapeAttr(s){
-    return String(s).replace(/"/g, "&quot;");
-  }
-  function escapeJs(s){
-    return String(s).replace(/\\/g, "\\\\").replace(/'/g, "\\'");
-  }
-  function escapeId(s){
-    // make safe for element id usage
-    return String(s).replace(/[^a-zA-Z0-9_-]/g, "_");
-  }
+  function escapeAttr(s){ return String(s).replace(/"/g, "&quot;"); }
+  function escapeJs(s){ return String(s).replace(/\\/g, "\\\\").replace(/'/g, "\\'"); }
+  function escapeId(s){ return String(s).replace(/[^a-zA-Z0-9_-]/g, "_"); }
 
-  // Auto-load keys once
-  ensureAPI().then(loadKeys);
+  // Startup
+  loadKeys();
 </script>
 </body>
 </html>

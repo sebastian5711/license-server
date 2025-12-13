@@ -30,12 +30,12 @@
       background: linear-gradient(180deg, #101012, #0f0f10);
       position: sticky; top: 0; z-index: 10;
     }
-    header h1 { margin: 0; font-size: 18px; letter-spacing: 0.4px; }
+    header h1 { margin: 0; font-size: 18px; }
     header .sub { margin-top: 6px; color: var(--muted); font-size: 12px; }
 
     .wrap { padding: 18px 22px; max-width: 1100px; margin: 0 auto; }
 
-    .tabs { display:flex; gap:10px; flex-wrap:wrap; margin-bottom: 14px; }
+    .tabs { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
     .tabbtn {
       background: var(--panel);
       border: 1px solid var(--border);
@@ -46,7 +46,7 @@
       font-weight: 700;
       font-size: 13px;
     }
-    .tabbtn.active { background: var(--accent); color:#111; border-color: transparent; }
+    .tabbtn.active { background: var(--accent); color: #111; border-color: transparent; }
 
     .panel {
       background: var(--panel);
@@ -56,21 +56,21 @@
       margin-bottom: 16px;
     }
     .panel h2 { margin: 0 0 12px 0; font-size: 16px; }
-    .grid { display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    @media (max-width: 900px){ .grid { grid-template-columns: 1fr; } }
 
-    label { display:block; font-size:12px; color:var(--muted); margin-bottom:6px; font-weight:700; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+    label { display:block; font-size: 12px; color: var(--muted); margin-bottom: 6px; font-weight: 700; }
     input {
-      width:100%;
+      width: 100%;
       background: var(--panel2);
-      border:1px solid var(--border);
+      border: 1px solid var(--border);
       color: var(--text);
       padding: 10px 12px;
       border-radius: 10px;
-      outline:none;
-      height:44px;
+      outline: none;
+      height: 44px;
     }
-    input:focus { border-color:#444; }
 
     .row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
 
@@ -84,13 +84,12 @@
       font-weight:700;
       cursor:pointer;
       min-width: 140px;
-      text-align:center;
+      text-align: center;
     }
     .btn:hover{ background:rgba(255,255,255,.10); }
     .btn.primary{ background:#fff; color:#111; border-color:transparent; }
     .btn.primary:hover{ background:rgba(255,255,255,.90); }
-    .btn.danger{ background:transparent; color:var(--danger); border:1px solid rgba(255,77,77,0.35); }
-    .btn:disabled{ opacity:.55; cursor:not-allowed; }
+    .btn.danger { background: transparent; color: var(--danger); border: 1px solid rgba(255,77,77,0.35); }
 
     .status {
       margin-top: 10px;
@@ -107,38 +106,22 @@
     .status.warn { color: var(--warn); border-color: rgba(255,176,32,0.35); }
 
     table {
-      width:100%;
-      border-collapse:collapse;
-      overflow:hidden;
-      border-radius:12px;
-      border:1px solid var(--border);
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 12px;
+      border: 1px solid var(--border);
       background: var(--panel2);
     }
-    th, td {
-      padding:10px;
-      border-bottom:1px solid var(--border);
-      font-size:12px;
-      vertical-align:top;
-    }
-    th { text-align:left; color:var(--muted); font-weight:900; background:#17171a; }
-    tr:hover td { background:#1b1b1f; }
-
+    th, td { padding: 10px; border-bottom: 1px solid var(--border); font-size: 12px; vertical-align: top; }
+    th { text-align:left; color: var(--muted); font-weight: 900; background: #17171a; }
+    tr:hover td { background: #1b1b1f; }
     .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
-    .pill {
-      display:inline-block;
-      padding:3px 8px;
-      border-radius:999px;
-      font-weight:900;
-      font-size:11px;
-      border:1px solid var(--border);
-      background:#141416;
-      color:var(--muted);
-    }
+    .pill { display:inline-block; padding:3px 8px; border-radius:999px; font-weight:900; font-size:11px; border:1px solid var(--border); background:#141416; color:var(--muted); }
     .pill.ok { color: var(--ok); border-color: rgba(76,175,80,0.35); }
     .pill.warn { color: var(--warn); border-color: rgba(255,176,32,0.35); }
     .pill.bad { color: var(--danger); border-color: rgba(255,77,77,0.35); }
-
-    .small { font-size: 12px; color: var(--muted); margin-top:6px; }
+    .small { font-size: 12px; color: var(--muted); margin-top: 6px; }
   </style>
 </head>
 <body>
@@ -159,12 +142,12 @@
     <div class="grid">
       <div>
         <label>How many keys?</label>
-        <input id="lifeCount" type="number" min="1" max="500" value="1" />
+        <input id="lifeCount" type="number" min="1" value="1" />
         <div class="small">Creates keys that never expire.</div>
       </div>
       <div></div>
       <div class="row" style="grid-column: 1 / -1;">
-        <button id="btnLife" class="btn primary" onclick="createKeys('lifetime')">Create Lifetime</button>
+        <button class="btn primary" onclick="createKeys('lifetime')">Create Lifetime</button>
         <button class="btn" onclick="loadKeys()">Refresh List</button>
       </div>
     </div>
@@ -177,14 +160,14 @@
       <div>
         <label>Days</label>
         <input id="timedDays" type="number" min="1" value="30" />
-        <div class="small">Expires X days after first activation (HWID bind).</div>
+        <div class="small">Expires X days after first activation.</div>
       </div>
       <div>
         <label>How many keys?</label>
-        <input id="timedCount" type="number" min="1" max="500" value="5" />
+        <input id="timedCount" type="number" min="1" value="5" />
       </div>
       <div class="row" style="grid-column: 1 / -1;">
-        <button id="btnTimed" class="btn primary" onclick="createKeys('timed')">Create Timed</button>
+        <button class="btn primary" onclick="createKeys('timed')">Create Timed</button>
         <button class="btn" onclick="loadKeys()">Refresh List</button>
       </div>
     </div>
@@ -193,7 +176,6 @@
 
   <div id="keys" class="panel" style="display:none;">
     <h2>Key Manager</h2>
-
     <div class="row" style="margin-bottom: 10px;">
       <input id="searchBox" placeholder="Search key / note / hwid..." oninput="renderKeys()" />
       <button class="btn" onclick="loadKeys()">Refresh</button>
@@ -206,11 +188,11 @@
         <thead>
           <tr>
             <th style="min-width:240px;">Key</th>
-            <th style="min-width:95px;">Type</th>
+            <th style="min-width:120px;">Type</th>
             <th style="min-width:180px;">Expires</th>
-            <th style="min-width:220px;">HWID</th>
-            <th style="min-width:260px;">Note</th>
-            <th style="min-width:340px;">Actions</th>
+            <th style="min-width:240px;">HWID</th>
+            <th style="min-width:260px;">Status</th>
+            <th style="min-width:260px;">Actions</th>
           </tr>
         </thead>
         <tbody id="keysBody">
@@ -227,22 +209,18 @@
   const API = {
     create: "/admin/create_keys",
     list: "/admin/keys",
-    resetHwid: "/admin/reset_hwid",
     revoke: "/admin/revoke",
-    note: "/admin/note",
+    reset: "/admin/reset_hwid"
   };
 
   let ALL_KEYS = [];
-  let BUSY = false;
 
-  function qs(){ return window.location.search || ""; }
+  function qs() { return window.location.search || ""; }
   function getToken(){ return new URLSearchParams(window.location.search).get("token") || ""; }
 
   function showTab(name){
     document.querySelectorAll(".tabbtn").forEach(b => b.classList.toggle("active", b.dataset.tab === name));
-    ["lifetime","timed","keys"].forEach(id => {
-      document.getElementById(id).style.display = (id === name) ? "block" : "none";
-    });
+    ["lifetime","timed","keys"].forEach(id => document.getElementById(id).style.display = (id === name) ? "block" : "none");
   }
 
   function setStatus(id, msg, kind){
@@ -252,24 +230,11 @@
     if (kind) el.classList.add(kind);
   }
 
-  function setBusy(on){
-    BUSY = on;
-    const btnLife = document.getElementById("btnLife");
-    const btnTimed = document.getElementById("btnTimed");
-    if (btnLife) btnLife.disabled = on;
-    if (btnTimed) btnTimed.disabled = on;
-  }
-
   async function createKeys(type){
     const statusId = (type === "lifetime") ? "lifeStatus" : "timedStatus";
-    if (BUSY) return;
-
     try {
       const token = getToken();
-      if (!token) {
-        setStatus(statusId, "Missing token. Open like: /admin?token=YOUR_ADMIN_TOKEN", "bad");
-        return;
-      }
+      if (!token) return setStatus(statusId, "Missing token. Use /admin?token=YOUR_ADMIN_TOKEN", "bad");
 
       const count = (type === "lifetime")
         ? parseInt(document.getElementById("lifeCount").value || "1", 10)
@@ -279,61 +244,44 @@
         ? 0
         : parseInt(document.getElementById("timedDays").value || "30", 10);
 
-      setBusy(true);
       setStatus(statusId, "Creating...", "warn");
-
-      const payload = {
-        token,
-        key_type: (type === "lifetime") ? "lifetime" : "timed",
-        count: Math.max(1, Math.min(count, 500)),
-        days: (type === "lifetime") ? 0 : Math.max(1, days),
-      };
 
       const r = await fetch(API.create, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({
+          token,
+          key_type: (type === "lifetime") ? "lifetime" : "timed",
+          count,
+          days
+        })
       });
 
       const data = await r.json().catch(() => ({}));
-
       if (!r.ok || data.ok === false) {
-        setStatus(statusId, "Create failed:\nHTTP " + r.status + "\n" + JSON.stringify(data, null, 2), "bad");
-        return;
+        return setStatus(statusId, "Create failed:\nHTTP " + r.status + "\n" + JSON.stringify(data, null, 2), "bad");
       }
 
-      const created = data.keys || [];
-      if (!Array.isArray(created) || created.length === 0) {
-        setStatus(statusId, "Created but server returned no keys:\n" + JSON.stringify(data, null, 2), "warn");
-        return;
-      }
-
-      setStatus(statusId, "Created:\n" + created.join("\n"), "ok");
-
+      const keys = data.keys || [];
+      setStatus(statusId, "Created:\n" + keys.join("\n"), "ok");
       await loadKeys();
       showTab("keys");
     } catch (e) {
       setStatus(statusId, "Error: " + String(e), "bad");
-    } finally {
-      setBusy(false);
     }
   }
 
   async function loadKeys(){
     try {
       const token = getToken();
-      if (!token) {
-        setStatus("keysStatus", "Missing token in URL.", "bad");
-        return;
-      }
+      if (!token) return setStatus("keysStatus", "Missing token in URL.", "bad");
+      setStatus("keysStatus", "Loading...", "warn");
 
-      setStatus("keysStatus", "Loading keys...", "warn");
       const r = await fetch(API.list + "?token=" + encodeURIComponent(token));
       const data = await r.json().catch(() => ({}));
 
       if (!r.ok || data.ok === false) {
-        setStatus("keysStatus", "Load failed:\n" + JSON.stringify(data, null, 2), "bad");
-        return;
+        return setStatus("keysStatus", "Load failed:\n" + JSON.stringify(data, null, 2), "bad");
       }
 
       ALL_KEYS = data.keys || [];
@@ -362,89 +310,35 @@
 
     for (const k of filtered){
       const key = k.license_key || "";
-      const type = (k.type || "").toUpperCase();
-      const expires = k.expires_at || (type === "LIFETIME" ? "NEVER" : "-");
+      const type = (k.key_type || "").toUpperCase();
+      const expires = k.expires_at || "NEVER";
       const hwid = k.hwid || "";
-      const revoked = !!k.revoked;
 
-      const typePill = type === "LIFETIME"
-        ? `<span class="pill ok">LIFETIME</span>`
-        : `<span class="pill warn">TIMED</span>`;
-
+      const revoked = (k.revoked === 1);
       const statusPill = revoked
         ? `<span class="pill bad">REVOKED</span>`
-        : (hwid ? `<span class="pill ok">BOUND</span>` : `<span class="pill">NOT BOUND</span>`);
+        : (hwid ? `<span class="pill ok">BOUND</span>` : `<span class="pill warn">NOT USED</span>`);
+
+      const typePill = (k.key_type === "lifetime")
+        ? `<span class="pill ok">LIFETIME</span>`
+        : `<span class="pill warn">TIMED (${k.days}d)</span>`;
 
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td class="mono">${escapeHtml(key)}</td>
         <td>${typePill}</td>
         <td class="mono">${escapeHtml(expires)}</td>
-        <td>
-          ${statusPill}
-          <div class="mono" style="margin-top:6px; word-break:break-all; color:var(--muted);">${escapeHtml(hwid || "-")}</div>
-        </td>
-        <td>
-          <input id="note_${escapeId(key)}" value="${escapeAttr(k.note || "")}" placeholder="Add note (customer / discord / etc)" />
-        </td>
+        <td class="mono" style="word-break:break-all;">${escapeHtml(hwid || "-")}</td>
+        <td>${statusPill}</td>
         <td>
           <div class="row">
             <button class="btn" onclick="copyText('${escapeJs(key)}')">Copy</button>
-            <button class="btn" onclick="saveNote('${escapeJs(key)}')">Save Note</button>
-            <button class="btn" onclick="resetHwid('${escapeJs(key)}')">Reset HWID</button>
+            <button class="btn" onclick="resetHWID('${escapeJs(key)}')">Reset HWID</button>
             <button class="btn danger" onclick="revokeKey('${escapeJs(key)}')">Revoke</button>
           </div>
         </td>
       `;
       tb.appendChild(tr);
-    }
-  }
-
-  async function saveNote(key){
-    try {
-      const token = getToken();
-      const val = document.getElementById("note_" + escapeId(key)).value || "";
-      setStatus("keysStatus", "Saving note...", "warn");
-
-      const r = await fetch(API.note + "/" + encodeURIComponent(key), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token, note: val }),
-      });
-      const data = await r.json().catch(() => ({}));
-
-      if (!r.ok || data.ok === false) {
-        setStatus("keysStatus", "Save note failed:\n" + JSON.stringify(data, null, 2), "bad");
-        return;
-      }
-
-      setStatus("keysStatus", "Note saved for " + key, "ok");
-      await loadKeys();
-    } catch (e) {
-      setStatus("keysStatus", "Error: " + String(e), "bad");
-    }
-  }
-
-  async function resetHwid(key){
-    if (!confirm("Reset HWID for " + key + " ?")) return;
-    try {
-      const token = getToken();
-      setStatus("keysStatus", "Resetting HWID...", "warn");
-
-      const r = await fetch(API.resetHwid + "/" + encodeURIComponent(key) + "?token=" + encodeURIComponent(token), {
-        method: "POST",
-      });
-      const data = await r.json().catch(() => ({}));
-
-      if (!r.ok || data.ok === false) {
-        setStatus("keysStatus", "Reset HWID failed:\n" + JSON.stringify(data, null, 2), "bad");
-        return;
-      }
-
-      setStatus("keysStatus", "HWID reset for " + key, "ok");
-      await loadKeys();
-    } catch (e) {
-      setStatus("keysStatus", "Error: " + String(e), "bad");
     }
   }
 
@@ -455,36 +349,49 @@
       setStatus("keysStatus", "Revoking...", "warn");
 
       const r = await fetch(API.revoke + "/" + encodeURIComponent(key) + "?token=" + encodeURIComponent(token), {
-        method: "POST",
+        method: "POST"
       });
+
       const data = await r.json().catch(() => ({}));
+      if (!r.ok || data.ok === false) return setStatus("keysStatus", "Revoke failed:\n" + JSON.stringify(data, null, 2), "bad");
 
-      if (!r.ok || data.ok === false) {
-        setStatus("keysStatus", "Revoke failed:\n" + JSON.stringify(data, null, 2), "bad");
-        return;
-      }
-
-      setStatus("keysStatus", "Revoked " + key, "ok");
       await loadKeys();
+      setStatus("keysStatus", "Revoked " + key, "ok");
+    } catch (e) {
+      setStatus("keysStatus", "Error: " + String(e), "bad");
+    }
+  }
+
+  async function resetHWID(key){
+    if (!confirm("Reset HWID for " + key + " ?")) return;
+    try {
+      const token = getToken();
+      setStatus("keysStatus", "Resetting HWID...", "warn");
+
+      const r = await fetch(API.reset, {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({ token, license_key: key })
+      });
+
+      const data = await r.json().catch(() => ({}));
+      if (!r.ok || data.ok === false) return setStatus("keysStatus", "Reset failed:\n" + JSON.stringify(data, null, 2), "bad");
+
+      await loadKeys();
+      setStatus("keysStatus", "HWID reset for " + key, "ok");
     } catch (e) {
       setStatus("keysStatus", "Error: " + String(e), "bad");
     }
   }
 
   function copyText(t){
-    navigator.clipboard.writeText(t).then(() => {
-      setStatus("keysStatus", "Copied: " + t, "ok");
-    }).catch(() => {
-      setStatus("keysStatus", "Copy failed (browser blocked).", "bad");
-    });
+    navigator.clipboard.writeText(t).then(() => setStatus("keysStatus", "Copied: " + t, "ok"))
+    .catch(() => setStatus("keysStatus", "Copy failed (browser blocked).", "bad"));
   }
 
   function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-  function escapeAttr(s){ return String(s).replace(/"/g, "&quot;"); }
   function escapeJs(s){ return String(s).replace(/\\/g, "\\\\").replace(/'/g, "\\'"); }
-  function escapeId(s){ return String(s).replace(/[^a-zA-Z0-9_-]/g, "_"); }
 
-  // Startup
   loadKeys();
 </script>
 </body>

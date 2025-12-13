@@ -315,23 +315,56 @@ input, select{
 
 <script>
   // Change these if your backend paths are different:
-  const API = {
-  listKeys: "/admin/web/keys",
-  create: "/admin/web/create",
-  resetHwid: "/admin/web/reset-hwid",
-  deleteKey: "/admin/web/delete",
-  setNote: "/admin/web/note",
+  // We will auto-detect which route exists on YOUR server
+const API_CANDIDATES = {
+  listKeys: ["/admin/web/keys", "/admin/keys", "/admin/keys/list", "/admin/list-keys"],
+  create:   ["/admin/web/create", "/admin/create", "/admin/create-key", "/admin/keys/create"],
+  resetHwid:["/admin/web/reset-hwid", "/admin/reset-hwid", "/admin/hwid/reset"],
+  deleteKey:["/admin/web/delete", "/admin/delete", "/admin/key/delete", "/admin/keys/delete"],
+  setNote:  ["/admin/web/note", "/admin/note", "/admin/key/note", "/admin/keys/note"],
 };
+
+const API = { listKeys:"", create:"", resetHwid:"", deleteKey:"", setNote:"" };
 
   let ALL_KEYS = [];
   
-function getToken(){
-  return new URLSearchParams(window.location.search).get("token") || "";
-}
   function qs() {
-    // keep token query in all requests
     return window.location.search || "";
   }
+
+  function getToken(){
+  return new URLSearchParams(window.location.search).get("token") || "";
+}
+
+async function detectEndpoint(name){
+  // Try each candidate until one is NOT 404
+  for (const path of API_CANDIDATES[name]) {
+    try {
+      // Try GET first (some servers use GET for list)
+      let r = await fetch(path + qs(), { method: "GET" });
+      if (r.status !== 404) return path;
+
+      // Try POST (some servers require token in body)
+      const fd = new FormData();
+      fd.append("token", getToken());
+      r = await fetch(path + qs(), { method: "POST", body: fd });
+      if (r.status !== 404) return path;
+
+    } catch (e) {}
+  }
+  return ""; // none found
+}
+
+async function ensureAPI(){
+  if (API.listKeys) return; // already detected
+
+  API.listKeys  = await detectEndpoint("listKeys");
+  API.create    = await detectEndpoint("create");
+  API.resetHwid = await detectEndpoint("resetHwid");
+  API.deleteKey = await detectEndpoint("deleteKey");
+  API.setNote   = await detectEndpoint("setNote");
+}
+
 
   function showTab(name){
     document.querySelectorAll(".tabbtn").forEach(b => b.classList.toggle("active", b.dataset.tab === name));
@@ -367,7 +400,13 @@ function getToken(){
 
       }
 
-      const r = await fetch(API.create, { method: "POST", body: fd });
+      await ensureAPI();
+if (!API.create) {
+  setStatus(statusId, "Create failed:\nNo working CREATE endpoint found on server.", "bad");
+  return;
+}
+
+const r = await fetch(API.create + qs(), { method: "POST", body: fd });
       const data = await r.json().catch(() => ({}));
 
       if (!r.ok || data.ok === false) {
@@ -387,13 +426,18 @@ function getToken(){
 
 async function loadKeys(){
   try {
+    await ensureAPI();
+    if (!API.listKeys) {
+      setStatus("keysStatus", "Load failed:\nNo working listKeys endpoint found.\nYour backend route name is different.", "bad");
+      return;
+    }
     setStatus("keysStatus", "Loading keys...", "warn");
 
     const fd = new FormData();
     fd.append("token", getToken());
 
     // backend expects token in BODY
-    const r = await fetch(API.listKeys, { method: "POST", body: fd });
+    const r = await fetch(API.listKeys + qs(), { method: "POST", body: fd });
     const data = await r.json().catch(() => ({}));
 
     if (!r.ok || data.ok === false) {
@@ -475,7 +519,12 @@ async function loadKeys(){
 
 
       setStatus("keysStatus", "Saving note...", "warn");
-      const r = await fetch(API.setNote, { method: "POST", body: fd });
+      await ensureAPI();
+if (!API.setNote) {
+  setStatus("keysStatus", "Save note failed:\nNo working NOTE endpoint found on server.", "bad");
+  return;
+}
+const r = await fetch(API.setNote + qs(), { method: "POST", body: fd });
       const data = await r.json().catch(() => ({}));
 
       if (!r.ok || data.ok === false) {
@@ -501,7 +550,12 @@ async function loadKeys(){
       fd.append("license_key", key);
 
       setStatus("keysStatus", "Resetting HWID...", "warn");
-      const r = await fetch(API.resetHwid, { method: "POST", body: fd });
+      await ensureAPI();
+if (!API.resetHwid) {
+  setStatus("keysStatus", "Reset HWID failed:\nNo working RESET endpoint found on server.", "bad");
+  return;
+}
+const r = await fetch(API.resetHwid + qs(), { method: "POST", body: fd });
       const data = await r.json().catch(() => ({}));
 
       if (!r.ok || data.ok === false) {
@@ -529,7 +583,12 @@ async function loadKeys(){
 
 
       setStatus("keysStatus", "Deleting key...", "warn");
-      const r = await fetch(API.deleteKey, { method: "POST", body: fd });
+      await ensureAPI();
+if (!API.deleteKey) {
+  setStatus("keysStatus", "Delete failed:\nNo working DELETE endpoint found on server.", "bad");
+  return;
+}
+const r = await fetch(API.deleteKey + qs(), { method: "POST", body: fd });
       const data = await r.json().catch(() => ({}));
 
       if (!r.ok || data.ok === false) {
@@ -568,7 +627,7 @@ async function loadKeys(){
   }
 
   // Auto-load keys once
-  loadKeys();
+  ensureAPI().then(loadKeys);
 </script>
 </body>
 </html>

@@ -1,64 +1,557 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <title>NovaMacro Admin</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NovaMacro Admin Panel</title>
   <style>
-    body { font-family: Arial; margin: 20px; max-width: 900px; }
-    .box { border: 1px solid #ddd; padding: 16px; border-radius: 8px; margin-bottom: 16px; }
-    input, select, button { padding: 8px; margin: 6px 0; width: 100%; }
-    code { background: #f4f4f4; padding: 2px 6px; border-radius: 4px; }
-    .keys { white-space: pre-wrap; font-family: Consolas, monospace; background:#f7f7f7; padding:12px; border-radius:8px;}
+    :root {
+      --bg: #0f0f10;
+      --panel: #161618;
+      --panel2: #1d1d20;
+      --text: #e8e8ea;
+      --muted: #a8a8ad;
+      --border: #2a2a2f;
+      --accent: #ffffff;
+      --danger: #ff4d4d;
+      --ok: #4caf50;
+      --warn: #ffb020;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: var(--bg);
+      color: var(--text);
+    }
+    header {
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, #101012, #0f0f10);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 18px;
+      letter-spacing: 0.4px;
+    }
+    header .sub {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .wrap {
+      padding: 18px 22px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+    .tabbtn {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 13px;
+    }
+    .tabbtn.active {
+      background: var(--accent);
+      color: #111;
+      border-color: transparent;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .panel h2 {
+      margin: 0 0 12px 0;
+      font-size: 16px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+    input, select, textarea {
+      width: 100%;
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 10px;
+      outline: none;
+    }
+    input:focus, select:focus, textarea:focus { border-color: #444; }
+
+    .row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .key-row{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+.key-row input{
+  flex:1;
+  min-width:260px;
+}
+input, select{
+  height:44px; /* match button height */
+}
+
+
+.btn{
+  height:44px;
+  padding:0 18px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.06);
+  color:#fff;
+  font-weight:700;
+  cursor:pointer;
+
+  min-width: 140px;   /* make buttons same width */
+  text-align: center;
+} 
+
+.btn:hover{
+  background:rgba(255,255,255,.10);
+}
+
+.btn.primary{
+  background:#fff;
+  color:#111;
+  border-color:transparent;
+}
+
+.btn.primary:hover{
+  background:rgba(255,255,255,.90);
+}
+
+    
+    .btn.danger {
+      background: transparent;
+      color: var(--danger);
+      border: 1px solid rgba(255,77,77,0.35);
+    }
+
+    .status {
+      margin-top: 10px;
+      font-size: 13px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #101012;
+      color: var(--muted);
+      white-space: pre-wrap;
+    }
+    .status.ok { color: var(--ok); border-color: rgba(76,175,80,0.35); }
+    .status.bad { color: var(--danger); border-color: rgba(255,77,77,0.35); }
+    .status.warn { color: var(--warn); border-color: rgba(255,176,32,0.35); }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--panel2);
+    }
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid var(--border);
+      font-size: 12px;
+      vertical-align: top;
+    }
+    th {
+      text-align: left;
+      color: var(--muted);
+      font-weight: 900;
+      background: #17171a;
+    }
+    tr:hover td { background: #1b1b1f; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .pill {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-weight: 900;
+      font-size: 11px;
+      border: 1px solid var(--border);
+      background: #141416;
+      color: var(--muted);
+    }
+    .pill.ok { color: var(--ok); border-color: rgba(76,175,80,0.35); }
+    .pill.bad { color: var(--danger); border-color: rgba(255,77,77,0.35); }
+    .pill.warn { color: var(--warn); border-color: rgba(255,176,32,0.35); }
+
+    .small {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
   </style>
 </head>
 <body>
+<header>
+  <h1>NovaMacro Admin Panel</h1>
+  <div class="sub">Open with <span class="mono">/admin?token=YOUR_ADMIN_TOKEN</span></div>
+</header>
 
-<h2>NovaMacro Admin Panel</h2>
+<div class="wrap">
+  <div class="tabs">
+    <button class="tabbtn active" data-tab="lifetime" onclick="showTab('lifetime')">Create Lifetime</button>
+    <button class="tabbtn" data-tab="timed" onclick="showTab('timed')">Create Timed</button>
+    <button class="tabbtn" data-tab="keys" onclick="showTab('keys')">Key Manager</button>
+  </div>
 
-{% if message %}
-  <div class="box"><b>{{ message }}</b></div>
-{% endif %}
+  <!-- Lifetime -->
+  <!-- Lifetime -->
+<div id="lifetime" class="panel">
+  <h2>Create Lifetime Keys</h2>
+  <div class="grid">
+    <div>
+      <label>How many keys?</label>
+      <input id="lifeCount" type="number" min="1" value="1" />
+      <div class="small">Creates keys that never expire.</div>
+    </div>
 
-<div class="box">
-  <h3>Create Keys</h3>
-  <form method="post" action="/admin/web/create">
-    <input type="hidden" name="token" value="{{ token }}"/>
+    <div>
+      <!-- empty right column (keeps same layout as Timed) -->
+    </div>
 
-    <label>Type</label>
-    <select name="key_type">
-      <option value="lifetime">Lifetime (never expires)</option>
-      <option value="days">Timed</option>
-    </select>
+    <div class="row" style="grid-column: 1 / -1;">
+      <button class="btn primary" onclick="createKeys('lifetime')">Create Lifetime</button>
+      <button class="btn" onclick="loadKeys()">Refresh List</button>
+    </div>
+  </div>
 
-    <label>Days (only for Timed)</label>
-    <input type="number" name="days" value="30" min="1"/>
-
-    <label>How many keys?</label>
-    <input type="number" name="count" value="5" min="1" max="5000"/>
-
-    <button type="submit">Create</button>
-  </form>
+  <div id="lifeStatus" class="status">Ready.</div>
 </div>
 
-<div class="box">
-  <h3>Revoke (Ban) Key</h3>
-  <form method="post" action="/admin/web/revoke">
-    <input type="hidden" name="token" value="{{ token }}"/>
-    <label>License Key</label>
-    <input type="text" name="license_key" placeholder="NOVA-...."/>
-    <button type="submit">Revoke</button>
-  </form>
+  <!-- Timed -->
+  <div id="timed" class="panel" style="display:none;">
+    <h2>Create Timed Keys</h2>
+    <div class="grid">
+      <div>
+        <label>Days</label>
+        <input id="timedDays" type="number" min="1" value="30" />
+        <div class="small">Example: 30 means it expires 30 days after first activation (depends on your backend rule).</div>
+      </div>
+      <div>
+        <label>How many keys?</label>
+        <input id="timedCount" type="number" min="1" value="5" />
+      </div>
+      <div class="key-row" style="grid-column: 1 / -1;">
+  <button class="btn primary" onclick="createKeys('timed')">Create Timed</button>
+  <button class="btn" onclick="loadKeys()">Refresh List</button>
+</div>
+    </div>
+    <div id="timedStatus" class="status">Ready.</div>
+  </div>
+
+  <!-- Key Manager -->
+  <div id="keys" class="panel" style="display:none;">
+    <h2>Key Manager</h2>
+
+    <div class="row" style="margin-bottom: 10px;">
+      <input id="searchBox" placeholder="Search key / note / hwid..." oninput="renderKeys()" />
+      <button class="btn" onclick="loadKeys()">Refresh</button>
+    </div>
+
+    <div class="small" id="keysMeta">No data loaded yet.</div>
+    <div style="margin-top:10px; overflow:auto;">
+      <table>
+        <thead>
+          <tr>
+            <th style="min-width:240px;">Key</th>
+            <th style="min-width:95px;">Type</th>
+            <th style="min-width:180px;">Expires</th>
+            <th style="min-width:220px;">HWID</th>
+            <th style="min-width:260px;">Note</th>
+            <th style="min-width:260px;">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="keysBody">
+          <tr><td colspan="6" class="small">Click Refresh.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div id="keysStatus" class="status" style="margin-top:12px;">Ready.</div>
+  </div>
 </div>
 
-{% if created_keys %}
-<div class="box">
-  <h3>Created Keys</h3>
-  <div class="keys">{% for k in created_keys %}{{ k }}
-{% endfor %}</div>
-</div>
-{% endif %}
+<script>
+  // Change these if your backend paths are different:
+  const API = {
+    listKeys: "/admin/keys",
+    create: "/admin/create",
+    resetHwid: "/admin/reset-hwid",
+    deleteKey: "/admin/delete",
+    setNote: "/admin/note",
+  };
 
-<p>Open this page with: <code>/admin?token=YOUR_ADMIN_TOKEN</code></p>
+  let ALL_KEYS = [];
 
+  function qs() {
+    // keep token query in all requests
+    return window.location.search || "";
+  }
+
+  function showTab(name){
+    document.querySelectorAll(".tabbtn").forEach(b => b.classList.toggle("active", b.dataset.tab === name));
+    ["lifetime","timed","keys"].forEach(id => {
+      document.getElementById(id).style.display = (id === name) ? "block" : "none";
+    });
+  }
+
+  function setStatus(id, msg, kind){
+    const el = document.getElementById(id);
+    el.textContent = msg;
+    el.classList.remove("ok","bad","warn");
+    if (kind) el.classList.add(kind);
+  }
+
+  async function createKeys(type){
+    const statusId = (type === "lifetime") ? "lifeStatus" : "timedStatus";
+    try {
+      setStatus(statusId, "Creating...", "warn");
+
+      const fd = new FormData();
+      if (type === "lifetime") {
+        fd.append("type", "lifetime");
+        fd.append("count", String(parseInt(document.getElementById("lifeCount").value || "1", 10)));
+        fd.append("days", "0");
+      } else {
+        fd.append("type", "timed");
+        fd.append("days", String(parseInt(document.getElementById("timedDays").value || "30", 10)));
+        fd.append("count", String(parseInt(document.getElementById("timedCount").value || "1", 10)));
+      }
+
+      const r = await fetch(API.create + qs(), { method: "POST", body: fd });
+      const data = await r.json().catch(() => ({}));
+
+      if (!r.ok || data.ok === false) {
+        setStatus(statusId, "Create failed:\n" + JSON.stringify(data, null, 2), "bad");
+        return;
+      }
+
+      const created = data.keys || data.created_keys || [];
+      setStatus(statusId, "Created:\n" + created.join("\n"), "ok");
+
+      await loadKeys(); // refresh list
+      showTab("keys");
+    } catch (e) {
+      setStatus(statusId, "Error: " + String(e), "bad");
+    }
+  }
+
+  async function loadKeys(){
+    try {
+      setStatus("keysStatus", "Loading keys...", "warn");
+      const r = await fetch(API.listKeys + qs());
+      const data = await r.json().catch(() => ({}));
+
+      if (!r.ok || data.ok === false) {
+        setStatus("keysStatus", "Load failed:\n" + JSON.stringify(data, null, 2), "bad");
+        return;
+      }
+
+      ALL_KEYS = data.keys || [];
+      document.getElementById("keysMeta").textContent = `Loaded ${ALL_KEYS.length} keys.`;
+      renderKeys();
+      setStatus("keysStatus", "Ready.", null);
+    } catch (e) {
+      setStatus("keysStatus", "Error: " + String(e), "bad");
+    }
+  }
+
+  function renderKeys(){
+    const q = (document.getElementById("searchBox").value || "").toLowerCase().trim();
+    const filtered = ALL_KEYS.filter(k => {
+      const s = (String(k.license_key || "") + " " + String(k.note || "") + " " + String(k.hwid || "")).toLowerCase();
+      return s.includes(q);
+    });
+
+    const tb = document.getElementById("keysBody");
+    tb.innerHTML = "";
+
+    if (filtered.length === 0) {
+      tb.innerHTML = `<tr><td colspan="6" class="small">No matches.</td></tr>`;
+      return;
+    }
+
+    for (const k of filtered){
+      const key = k.license_key || "";
+      const type = (k.type || "").toUpperCase();
+      const expires = k.expires_at || "NEVER";
+      const hwid = k.hwid || "";
+
+      const typePill = type === "LIFETIME"
+        ? `<span class="pill ok">LIFETIME</span>`
+        : `<span class="pill warn">TIMED</span>`;
+
+      const hwidPill = hwid
+        ? `<span class="pill ok">BOUND</span>`
+        : `<span class="pill">NOT BOUND</span>`;
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td class="mono">${escapeHtml(key)}</td>
+        <td>${typePill}</td>
+        <td class="mono">${escapeHtml(expires)}</td>
+        <td>
+          ${hwidPill}
+          <div class="mono" style="margin-top:6px; word-break:break-all; color:var(--muted);">${escapeHtml(hwid || "-")}</div>
+        </td>
+        <td>
+          <input id="note_${escapeId(key)}" value="${escapeAttr(k.note || "")}" placeholder="Add note (customer / discord / etc)" />
+        </td>
+        <td>
+          <div class="row">
+            <button class="btn" onclick="copyText('${escapeJs(key)}')">Copy</button>
+            <button class="btn" onclick="saveNote('${escapeJs(key)}')">Save Note</button>
+            <button class="btn" onclick="resetHwid('${escapeJs(key)}')">Reset HWID</button>
+            <button class="btn danger" onclick="deleteKey('${escapeJs(key)}')">Delete</button>
+          </div>
+        </td>
+      `;
+      tb.appendChild(tr);
+    }
+  }
+
+  async function saveNote(key){
+    try {
+      const val = document.getElementById("note_" + escapeId(key)).value || "";
+      const fd = new FormData();
+      fd.append("license_key", key);
+      fd.append("note", val);
+
+      setStatus("keysStatus", "Saving note...", "warn");
+      const r = await fetch(API.setNote + qs(), { method: "POST", body: fd });
+      const data = await r.json().catch(() => ({}));
+
+      if (!r.ok || data.ok === false) {
+        setStatus("keysStatus", "Save note failed:\n" + JSON.stringify(data, null, 2), "bad");
+        return;
+      }
+
+      // update local cache
+      const item = ALL_KEYS.find(x => x.license_key === key);
+      if (item) item.note = val;
+
+      setStatus("keysStatus", "Note saved for " + key, "ok");
+    } catch (e) {
+      setStatus("keysStatus", "Error: " + String(e), "bad");
+    }
+  }
+
+  async function resetHwid(key){
+    if (!confirm("Reset HWID for " + key + " ? (It will allow binding to a new computer)")) return;
+    try {
+      const fd = new FormData();
+      fd.append("license_key", key);
+
+      setStatus("keysStatus", "Resetting HWID...", "warn");
+      const r = await fetch(API.resetHwid + qs(), { method: "POST", body: fd });
+      const data = await r.json().catch(() => ({}));
+
+      if (!r.ok || data.ok === false) {
+        setStatus("keysStatus", "Reset HWID failed:\n" + JSON.stringify(data, null, 2), "bad");
+        return;
+      }
+
+      // update local cache
+      const item = ALL_KEYS.find(x => x.license_key === key);
+      if (item) item.hwid = "";
+
+      renderKeys();
+      setStatus("keysStatus", "HWID reset for " + key, "ok");
+    } catch (e) {
+      setStatus("keysStatus", "Error: " + String(e), "bad");
+    }
+  }
+
+  async function deleteKey(key){
+    if (!confirm("DELETE key " + key + " ? This cannot be undone.")) return;
+    try {
+      const fd = new FormData();
+      fd.append("license_key", key);
+
+      setStatus("keysStatus", "Deleting key...", "warn");
+      const r = await fetch(API.deleteKey + qs(), { method: "POST", body: fd });
+      const data = await r.json().catch(() => ({}));
+
+      if (!r.ok || data.ok === false) {
+        setStatus("keysStatus", "Delete failed:\n" + JSON.stringify(data, null, 2), "bad");
+        return;
+      }
+
+      ALL_KEYS = ALL_KEYS.filter(x => x.license_key !== key);
+      renderKeys();
+      setStatus("keysStatus", "Deleted " + key, "ok");
+    } catch (e) {
+      setStatus("keysStatus", "Error: " + String(e), "bad");
+    }
+  }
+
+  function copyText(t){
+    navigator.clipboard.writeText(t).then(() => {
+      setStatus("keysStatus", "Copied: " + t, "ok");
+    }).catch(() => {
+      setStatus("keysStatus", "Copy failed (browser blocked).", "bad");
+    });
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+  function escapeAttr(s){
+    return String(s).replace(/"/g, "&quot;");
+  }
+  function escapeJs(s){
+    return String(s).replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+  }
+  function escapeId(s){
+    // make safe for element id usage
+    return String(s).replace(/[^a-zA-Z0-9_-]/g, "_");
+  }
+
+  // Auto-load keys once
+  loadKeys();
+</script>
 </body>
 </html>
+

@@ -281,51 +281,42 @@
     }
   }
 
-  async function resetHwid(key){
-    if (!confirm("Reset HWID for " + key + " ?")) return;
-    try{
-      const token = getToken();
-      const fd = new FormData();
-      fd.append("token", token);
-      fd.append("license_key", key);
-
-      setStatus("keysStatus", "Resetting HWID...", "warn");
-      const r = await fetch(API.resetHwid + qs(), { method:"POST", body: fd });
-      const data = await r.json().catch(() => ({}));
-
-      if (!r.ok || data.ok === false){
-        setStatus("keysStatus", "Reset HWID failed:\n" + JSON.stringify(data, null, 2), "bad");
-        return;
-      }
-      setStatus("keysStatus", "HWID reset.", "ok");
-      await loadKeys();
-    } catch(e){
-      setStatus("keysStatus", "Error: " + String(e), "bad");
-    }
-  }
-
   async function revokeKey(key){
-    if (!confirm("REVOKE key " + key + " ?")) return;
-    try{
-      const token = getToken();
-      const fd = new FormData();
-      fd.append("token", token);
-      fd.append("license_key", key);
+  if (!confirm("REVOKE key " + key + " ?")) return;
 
-      setStatus("keysStatus", "Revoking...", "warn");
-      const r = await fetch(API.revoke + qs(), { method:"POST", body: fd });
-      const data = await r.json().catch(() => ({}));
-
-      if (!r.ok || data.ok === false){
-        setStatus("keysStatus", "Revoke failed:\n" + JSON.stringify(data, null, 2), "bad");
-        return;
-      }
-      setStatus("keysStatus", "Revoked.", "ok");
-      await loadKeys();
-    } catch(e){
-      setStatus("keysStatus", "Error: " + String(e), "bad");
+  try {
+    const token = getToken();
+    if (!token) {
+      setStatus("keysStatus", "Missing token in URL.", "bad");
+      return;
     }
+
+    setStatus("keysStatus", "Revoking...", "warn");
+
+    const url = `/admin/revoke/${encodeURIComponent(key)}${qs()}`;
+    const r = await fetch(url, {
+      method: "POST",
+      headers: { "X-Admin-Token": token }
+    });
+
+    const data = await r.json().catch(() => ({}));
+
+    if (!r.ok || data.ok === false) {
+      setStatus("keysStatus", "Revoke failed:\n" + JSON.stringify(data, null, 2), "bad");
+      return;
+    }
+
+    ALL_KEYS = ALL_KEYS.filter(x => x.license_key !== key);
+    saveLocalKeys();
+    renderKeys();
+    setStatus("keysStatus", "Revoked " + key, "ok");
+  } catch (e) {
+    setStatus("keysStatus", "Error: " + String(e), "bad");
   }
+}
+
+
+
 
   function copyText(t){
     navigator.clipboard.writeText(t).then(() => setStatus("keysStatus", "Copied: " + t, "ok"))

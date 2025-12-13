@@ -325,63 +325,100 @@
     setStatus("keysStatus", "Ready.", null);
   }
 
-  async function createKeys(type){
-    const statusId = (type === "lifetime") ? "lifeStatus" : "timedStatus";
-    try {
-      const token = getToken();
-      if (!token) {
-        setStatus(statusId, "Missing token. Open like: /admin?token=YOUR_ADMIN_TOKEN", "bad");
-        return;
-      }
+async function createKeys(type){
+  const statusId = (type === "lifetime") ? "lifeStatus" : "timedStatus";
 
-      setStatus(statusId, "Creating...", "warn");
-
-      const fd = new FormData();
-      fd.append("token", token);
-      fd.append("key_type", type === "lifetime" ? "lifetime" : "timed");
-
-      if (type === "lifetime") {
-        fd.append("count", String(parseInt(document.getElementById("lifeCount").value || "1", 10)));
-        fd.append("days", "0");
-      } else {
-        fd.append("days", String(parseInt(document.getElementById("timedDays").value || "30", 10)));
-        fd.append("count", String(parseInt(document.getElementById("timedCount").value || "1", 10)));
-      }
-
-      const r = await fetch(API.create + qs(), { method: "POST", body: fd });
-      const data = await r.json().catch(() => ({}));
-
-      if (!r.ok || data.ok === false) {
-        setStatus(statusId, "Create failed:\n" + JSON.stringify(data, null, 2), "bad");
-        return;
-      }
-
-      const created = data.keys || data.created_keys || [];
-      if (!Array.isArray(created) || created.length === 0) {
-        setStatus(statusId, "Created OK, but server did not return keys:\n" + JSON.stringify(data, null, 2), "warn");
-        return;
-      }
-
-      // Save keys locally so Key Manager can show them
-      for (const k of created) {
-        ALL_KEYS.unshift({
-          license_key: k,
-          type: type === "lifetime" ? "LIFETIME" : "TIMED",
-          expires_at: type === "lifetime" ? "NEVER" : "(server)",
-          hwid: "",
-          note: ""
-        });
-      }
-      saveLocalKeys();
-
-      setStatus(statusId, "Created:\n" + created.join("\n"), "ok");
-
-      loadKeys();
-      showTab("keys");
-    } catch (e) {
-      setStatus(statusId, "Error: " + String(e), "bad");
+  try {
+    const token = getToken();
+    if (!token) {
+      setStatus(statusId, "Missing token. Open like: /admin?token=YOUR_ADMIN_TOKEN", "bad");
+      return;
     }
+
+    setStatus(statusId, "Creating...", "warn");
+
+    const fd = new FormData();
+    fd.append("token", token);
+    fd.append("key_type", type === "lifetime" ? "lifetime" : "timed");
+
+    if (type === "lifetime") {
+      fd.append("count", String(parseInt(document.getElementById("lifeCount").value || "1", 10)));
+      fd.append("days", "0");
+    } else {
+      fd.append("days", String(parseInt(document.getElementById("timedDays").value || "30", 10)));
+      fd.append("count", String(parseInt(document.getElementById("timedCount").value || "1", 10)));
+    }
+
+    const r = await fetch(API.create + qs(), { method: "POST", body: fd });
+
+    // Read raw response FIRST (works for JSON or text)
+    const raw = await r.text();
+    let data = {};
+    try { data = raw ? JSON.parse(raw) : {}; } catch { data = {}; }
+
+    if (!r.ok || data.ok === false) {
+      // show raw body so we can see what server really returns
+      setStatus(statusId, "Create failed:\nHTTP " + r.status + "\n\n" + (raw || "(empty)"), "bad");
+      return;
+    }
+
+    // Try ALL common formats
+    let created = [];
+
+    // 1) keys: ["K1","K2"]
+    if (Array.isArray(data.keys)) created = data.keys;
+
+    // 2) created_keys: ["K1","K2"]
+    if (created.length === 0 && Array.isArray(data.created_keys)) created = data.created_keys;
+
+    // 3) created_keys: [{license_key:"..."}]
+    if (created.length === 0 && Array.isArray(data.created_keys) && data.created_keys[0] && typeof data.created_keys[0] === "object") {
+      created = data.created_keys.map(x => x.license_key).filter(Boolean);
+    }
+
+    // 4) single key string fields
+    if (created.length === 0 && typeof data.license_key === "string") created = [data.license_key];
+    if (created.length === 0 && typeof data.key === "string") created = [data.key];
+
+    // 5) fallback: extract “key-looking strings” from raw text/html
+    if (created.length === 0 && raw) {
+      // looks for long tokens/keys (adjust if your keys are shorter)
+      const matches = raw.match(/[A-Za-z0-9_-]{16,}/g) || [];
+      // remove obvious words like "lifetime", "success", etc.
+      created = matches.filter(x => !["lifetime","timed","success","created","token","admin"].includes(x.toLowerCase()));
+      // dedupe
+      created = [...new Set(created)];
+    }
+
+    if (created.length === 0) {
+      setStatus(
+        statusId,
+        "Created OK, but server did not return keys.\n\nRAW RESPONSE:\n" + (raw || "(empty)"),
+        "warn"
+      );
+      return;
+    }
+
+    // Save locally for Key Manager
+    for (const k of created) {
+      ALL_KEYS.unshift({
+        license_key: k,
+        type: type === "lifetime" ? "LIFETIME" : "TIMED",
+        expires_at: type === "lifetime" ? "NEVER" : "(server)",
+        hwid: "",
+        note: ""
+      });
+    }
+    saveLocalKeys();
+
+    setStatus(statusId, "Created:\n" + created.join("\n"), "ok");
+    loadKeys();
+    showTab("keys");
+
+  } catch (e) {
+    setStatus(statusId, "Error: " + String(e), "bad");
   }
+}
 
   function renderKeys(){
     const q = (document.getElementById("searchBox").value || "").toLowerCase().trim();
